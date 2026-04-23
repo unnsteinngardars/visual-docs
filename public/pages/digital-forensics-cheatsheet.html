@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Forensics Cheat Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#E84040;--red-dim:rgba(232,64,64,.12);
+  --amber:#E8952A;--amber-dim:rgba(232,149,42,.12);
+  --green:#2EAD6C;--green-dim:rgba(46,173,108,.10);
+  --blue:#3A8DD6;--blue-dim:rgba(58,141,214,.10);
+  --purple:#7C5CBF;--purple-dim:rgba(124,92,191,.10);
+  --teal:#1D9E8A;--teal-dim:rgba(29,158,138,.10);
+  --bg:#0C0D0F;--sf:#131519;--sf2:#1A1D23;
+  --bd:rgba(255,255,255,.07);--bdhi:rgba(255,255,255,.13);
+  --tx:#E8E6E0;--dm:#8A8880;--dm2:#555450;
+  --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:var(--mono);font-size:12px;line-height:1.5;padding:14px 12px 40px}
+.page{max-width:1280px;margin:0 auto}
+
+.hdr{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--bd)}
+.hdr-l{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.skull{width:38px;height:38px;flex-shrink:0;background:var(--blue-dim);border:1px solid var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:19px}
+.t1{font-family:var(--sans);font-size:clamp(13px,2.8vw,20px);font-weight:800;color:#fff;line-height:1.15}
+.t2{font-size:10px;color:var(--dm);margin-top:2px}
+.badges{display:flex;gap:5px;flex-wrap:wrap}
+.b{font-family:var(--sans);font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap}
+.b-r{background:var(--red-dim);color:var(--red);border:1px solid rgba(232,64,64,.3)}
+.b-a{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(232,149,42,.3)}
+.b-g{background:var(--green-dim);color:var(--green);border:1px solid rgba(46,173,108,.3)}
+.b-b{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(58,141,214,.3)}
+.b-p{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(124,92,191,.3)}
+.b-t{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(29,158,138,.3)}
+
+.phases{display:flex;margin-bottom:14px;border:1px solid var(--bdhi);border-radius:8px;overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ph{flex:1;min-width:64px;padding:7px 5px;text-align:center;font-family:var(--sans);font-size:8.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;border-right:1px solid var(--bd)}
+.ph:last-child{border-right:none}
+.phn{display:block;font-size:14px;font-weight:800;margin-bottom:1px}
+.ph1{background:rgba(232,64,64,.08);color:var(--red)}
+.ph2{background:rgba(232,149,42,.08);color:var(--amber)}
+.ph3{background:rgba(58,141,214,.08);color:var(--blue)}
+.ph4{background:rgba(124,92,191,.08);color:var(--purple)}
+.ph5{background:rgba(29,158,138,.08);color:var(--teal)}
+.ph6{background:rgba(46,173,108,.08);color:var(--green)}
+
+.g{display:grid;gap:11px;grid-template-columns:repeat(4,1fr);margin-bottom:11px}
+.s2{grid-column:span 2}.s3{grid-column:span 3}.s4{grid-column:span 4}
+@media(max-width:860px){
+  .g{grid-template-columns:repeat(2,1fr)}
+  .s2,.s3,.s4{grid-column:span 2!important}
+}
+@media(max-width:500px){
+  .g{grid-template-columns:1fr}
+  .s2,.s3,.s4{grid-column:1!important}
+}
+
+.c{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px 12px 10px;display:flex;flex-direction:column;gap:8px}
+.c-r{border-top:2px solid var(--red)}.c-a{border-top:2px solid var(--amber)}
+.c-b{border-top:2px solid var(--blue)}.c-p{border-top:2px solid var(--purple)}
+.c-t{border-top:2px solid var(--teal)}.c-g{border-top:2px solid var(--green)}
+.ch{display:flex;align-items:center;gap:7px;margin-bottom:1px}
+.ci{font-size:13px;flex-shrink:0}
+.ct{font-family:var(--sans);font-size:11px;font-weight:700;color:#fff;line-height:1.1}
+
+.cmds{display:flex;flex-direction:column;gap:4px}
+.cmd{background:var(--sf2);border:1px solid var(--bd);border-radius:5px;padding:5px 8px}
+.lbl{font-size:9px;color:var(--dm2);font-family:var(--sans);font-weight:500;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+.cc{font-size:10px;color:#C8E6FF;word-break:break-all;line-height:1.4}
+.cc .kw{color:#9CDCFE}.cc .val{color:#CE9178}.cc .cmt{color:var(--dm2);font-style:italic}
+
+.ck{display:flex;flex-direction:column;gap:3px}
+.ki{display:flex;gap:6px;align-items:flex-start;font-size:10.5px;line-height:1.4}
+.kb{width:13px;height:13px;border:1px solid var(--bdhi);border-radius:3px;flex-shrink:0;margin-top:1px;background:var(--sf2)}
+.ki.crit .kb{border-color:var(--red)}.ki.warn .kb{border-color:var(--amber)}
+
+.tc2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.tc3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+@media(max-width:640px){.tc2,.tc3{grid-template-columns:1fr}}
+
+.sl{font-family:var(--sans);font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--dm2);margin-bottom:4px}
+
+.al{display:flex;align-items:flex-start;gap:6px;padding:5px 8px;border-radius:5px;font-size:10.5px;line-height:1.4}
+.al.r{background:var(--red-dim);border:1px solid rgba(232,64,64,.25);color:#F4A0A0}
+.al.a{background:var(--amber-dim);border:1px solid rgba(232,149,42,.25);color:#F4C87A}
+.ali{font-size:12px;flex-shrink:0}
+
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.et{width:100%;border-collapse:collapse;font-size:10px;min-width:260px}
+.et th{font-family:var(--sans);font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--dm2);padding:3px 5px;text-align:left;border-bottom:1px solid var(--bd)}
+.et td{padding:3px 5px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:top;line-height:1.3}
+.et tr:last-child td{border-bottom:none}
+.et td:first-child{color:#9CDCFE;font-weight:500;white-space:nowrap}
+.et tr.cr td:first-child{color:var(--red)}.et tr.wa td:first-child{color:var(--amber)}.et tr.in td:first-child{color:var(--blue)}
+
+.atk{display:flex;gap:5px;flex-wrap:wrap}
+.ap{background:var(--sf2);border:1px solid var(--bdhi);border-radius:4px;padding:3px 7px;font-size:9px;color:var(--dm)}
+.ap strong{color:var(--purple);font-weight:600;display:block;font-size:8px;font-family:var(--sans);text-transform:uppercase;letter-spacing:.4px}
+
+.bnr{background:var(--sf);border:1px solid var(--bdhi);border-radius:10px;padding:11px 12px;margin-bottom:12px}
+.bnh{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.bnb{background:var(--bg);border:1px solid var(--bdhi);border-radius:5px;padding:8px 10px;font-size:9.5px;color:#D4D0C8;word-break:break-all;line-height:1.6;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.bnb .kw{color:#9CDCFE}.bnb .val{color:#CE9178}
+
+.ft{margin-top:16px;padding-top:10px;border-top:1px solid var(--bd);display:flex;justify-content:space-between;flex-wrap:wrap;gap:5px;font-size:9px;color:var(--dm2)}
+code{font-family:var(--mono);font-size:9.5px;color:#9CDCFE}
+</style>
+</head>
+<body><div class="page">
+
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="skull">🔬</div>
+    <div><div class="t1">Digital Forensics — Examiner Cheat Sheet</div><div class="t2">Evidence Acquisition · Filesystem &amp; Registry Artifacts · Timeline · Memory · Anti-Forensics</div></div>
+  </div>
+  <div class="badges">
+    <span class="b b-b">DFIR</span><span class="b b-p">NTFS</span><span class="b b-a">Registry</span><span class="b b-t">Memory</span><span class="b b-g">Timeline</span><span class="b b-r">Chain of Custody</span>
+  </div>
+</div>
+
+<div class="phases">
+  <div class="ph ph1"><span class="phn">01</span>Identify</div>
+  <div class="ph ph2"><span class="phn">02</span>Preserve</div>
+  <div class="ph ph3"><span class="phn">03</span>Acquire</div>
+  <div class="ph ph4"><span class="phn">04</span>Analyze</div>
+  <div class="ph ph5"><span class="phn">05</span>Correlate</div>
+  <div class="ph ph6"><span class="phn">06</span>Report</div>
+</div>
+
+<div class="g">
+  <div class="c c-r">
+    <div class="ch"><span class="ci">📜</span><span class="ct">01 · Chain of Custody</span></div>
+    <div class="ck">
+      <div class="ki crit"><div class="kb"></div><div>Document exhibit ID, acquisition date/time (UTC + local), examiner, witness</div></div>
+      <div class="ki crit"><div class="kb"></div><div>Photograph scene, serials, screen state BEFORE touching</div></div>
+      <div class="ki crit"><div class="kb"></div><div>Record every transfer — custodian, purpose, hashes at each handoff</div></div>
+      <div class="ki warn"><div class="kb"></div><div>Hash source and image (MD5 + SHA-256) — verify match before analysis</div></div>
+      <div class="ki warn"><div class="kb"></div><div>Use write-blocker (hardware preferred) for any physical media</div></div>
+      <div class="ki"><div class="kb"></div><div>Store originals read-only; work exclusively from verified copies</div></div>
+    </div>
+  </div>
+
+  <div class="c c-a">
+    <div class="ch"><span class="ci">⏱</span><span class="ct">02 · Order of Volatility</span></div>
+    <div class="ck">
+      <div class="ki crit"><div class="kb"></div><div>CPU registers, cache, ARP &amp; routing tables (seconds)</div></div>
+      <div class="ki crit"><div class="kb"></div><div>RAM — processes, handles, network sockets, keys (minutes)</div></div>
+      <div class="ki warn"><div class="kb"></div><div>Temp files, pagefile.sys / swapfile.sys, hibernation (minutes–hours)</div></div>
+      <div class="ki warn"><div class="kb"></div><div>Disk: allocated files, MFT, journals, event logs (persistent)</div></div>
+      <div class="ki"><div class="kb"></div><div>Remote logs, backups, cloud/SIEM retention (long term)</div></div>
+      <div class="ki"><div class="kb"></div><div>Physical printouts, archived media (long term)</div></div>
+    </div>
+  </div>
+
+  <div class="c c-b">
+    <div class="ch"><span class="ci">💽</span><span class="ct">03 · Disk Imaging</span></div>
+    <div class="cmds">
+      <div class="cmd"><div class="lbl">dd raw image + hash</div><div class="cc"><span class="kw">dd</span> if=<span class="val">/dev/sdb</span> of=<span class="val">case.raw</span> bs=4M conv=noerror,sync status=progress</div></div>
+      <div class="cmd"><div class="lbl">dcfldd (dd fork with hashing)</div><div class="cc"><span class="kw">dcfldd</span> if=/dev/sdb hash=sha256 hashlog=<span class="val">hash.txt</span> of=<span class="val">case.raw</span></div></div>
+      <div class="cmd"><div class="lbl">FTK Imager CLI (E01)</div><div class="cc">ftkimager <span class="val">/dev/sdb case</span> --e01 --compress 6 --case-number 001</div></div>
+      <div class="cmd"><div class="lbl">ewfacquire (EnCase E01)</div><div class="cc"><span class="kw">ewfacquire</span> -t <span class="val">case</span> -c best -d sha256 /dev/sdb</div></div>
+      <div class="cmd"><div class="lbl">Verify image integrity</div><div class="cc">sha256sum <span class="val">case.raw</span>; <span class="kw">ewfverify</span> case.E01</div></div>
+      <div class="cmd"><div class="lbl">Mount read-only for analysis</div><div class="cc"><span class="kw">mount</span> -o ro,loop,noexec,noatime <span class="val">case.raw</span> /mnt/evidence</div></div>
+    </div>
+  </div>
+
+  <div class="c c-t">
+    <div class="ch"><span class="ci">🧠</span><span class="ct">03 · Memory Acquisition</span></div>
+    <div class="cmds">
+      <div class="cmd"><div class="lbl">WinPmem (Windows live)</div><div class="cc">winpmem_mini_x64.exe <span class="val">mem.aff4</span></div></div>
+      <div class="cmd"><div class="lbl">Magnet RAM Capture / DumpIt</div><div class="cc"><span class="cmt"># GUI — writes raw .mem before reboot</span></div></div>
+      <div class="cmd"><div class="lbl">Linux — LiME kernel module</div><div class="cc"><span class="kw">insmod</span> lime.ko <span class="val">"path=/evidence/mem.lime format=lime"</span></div></div>
+      <div class="cmd"><div class="lbl">macOS — osxpmem / mac_apt</div><div class="cc">sudo osxpmem.app/osxpmem -o <span class="val">mem.aff4</span></div></div>
+      <div class="cmd"><div class="lbl">Pagefile + hibernation</div><div class="cc">pagefile.sys · swapfile.sys · hiberfil.sys <span class="cmt"># copy alongside RAM</span></div></div>
+      <div class="cmd"><div class="lbl">VM snapshot → memory</div><div class="cc"><span class="cmt"># .vmem / .vmsn (VMware), .save (KVM)</span></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="g">
+  <div class="c c-p s2">
+    <div class="ch"><span class="ci">🗂</span><span class="ct">04 · NTFS Filesystem Artifacts</span></div>
+    <div class="tc2">
+      <div>
+        <div class="sl">Master File Table &amp; Journals</div>
+        <div class="tw"><table class="et">
+          <thead><tr><th>Artifact</th><th>Location</th><th>Tool</th></tr></thead>
+          <tbody>
+            <tr class="cr"><td>$MFT</td><td>Volume root</td><td>MFTECmd</td></tr>
+            <tr class="cr"><td>$LogFile</td><td>Volume root</td><td>LogFileParser</td></tr>
+            <tr class="wa"><td>$UsnJrnl:$J</td><td>$Extend</td><td>MFTECmd -j</td></tr>
+            <tr class="in"><td>$Boot</td><td>Volume root</td><td>analyzeMFT</td></tr>
+            <tr class="wa"><td>VSS shadows</td><td>\\?\GLOBALROOT</td><td>vshadowmount</td></tr>
+            <tr class="in"><td>$Recycle.Bin</td><td>Per-user SID</td><td>RBCmd</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div>
+        <div class="sl">MACB Timestamps (SI vs FN)</div>
+        <div class="tw"><table class="et">
+          <thead><tr><th>Flag</th><th>Meaning</th><th>Note</th></tr></thead>
+          <tbody>
+            <tr class="cr"><td>M</td><td>Modified ($SI)</td><td>File content change</td></tr>
+            <tr class="wa"><td>A</td><td>Accessed ($SI)</td><td>Often disabled Win8+</td></tr>
+            <tr class="in"><td>C</td><td>$MFT Changed</td><td>Metadata write</td></tr>
+            <tr class="in"><td>B</td><td>Born / Created</td><td>Creation time</td></tr>
+            <tr class="cr"><td>$FN</td><td>FileName attrib</td><td>Resists timestomp</td></tr>
+            <tr class="wa"><td>$SI &lt; $FN</td><td>Timestomping flag</td><td>Anti-forensics</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="c c-a s2">
+    <div class="ch"><span class="ci">🗝</span><span class="ct">04 · Windows Registry Hives</span></div>
+    <div class="tc2">
+      <div>
+        <div class="sl">System Hives — C:\Windows\System32\config</div>
+        <div class="tw"><table class="et">
+          <thead><tr><th>Hive</th><th>Key Artifact</th></tr></thead>
+          <tbody>
+            <tr class="in"><td>SYSTEM</td><td>ControlSet, Services, ShimCache</td></tr>
+            <tr class="in"><td>SOFTWARE</td><td>Uninstall, Run, AmCache, NetworkList</td></tr>
+            <tr class="cr"><td>SAM</td><td>Local users, RIDs, password hashes</td></tr>
+            <tr class="cr"><td>SECURITY</td><td>LSA secrets, cached creds</td></tr>
+            <tr class="wa"><td>BCD</td><td>Boot config (\Boot\BCD)</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div>
+        <div class="sl">User Hives — %USERPROFILE%</div>
+        <div class="tw"><table class="et">
+          <thead><tr><th>Hive</th><th>Key Artifact</th></tr></thead>
+          <tbody>
+            <tr class="cr"><td>NTUSER.DAT</td><td>UserAssist, RecentDocs, TypedPaths</td></tr>
+            <tr class="cr"><td>UsrClass.dat</td><td>Shellbags, MUICache</td></tr>
+            <tr class="wa"><td>Run MRU</td><td>Software\...\RunMRU</td></tr>
+            <tr class="wa"><td>Open/Save MRU</td><td>ComDlg32\OpenSavePidlMRU</td></tr>
+            <tr class="in"><td>TypedURLs</td><td>IE/Edge address bar history</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="g">
+  <div class="c c-b">
+    <div class="ch"><span class="ci">▶</span><span class="ct">04 · Program Execution</span></div>
+    <div class="cmds">
+      <div class="cmd"><div class="lbl">Prefetch (last 8 runs, paths)</div><div class="cc">C:\Windows\Prefetch\*.pf <span class="cmt"># PECmd -d</span></div></div>
+      <div class="cmd"><div class="lbl">AmCache (installed / run EXEs)</div><div class="cc">C:\Windows\AppCompat\Programs\Amcache.hve</div></div>
+      <div class="cmd"><div class="lbl">ShimCache / AppCompatCache</div><div class="cc"><span class="cmt"># SYSTEM hive — AppCompatCacheParser</span></div></div>
+      <div class="cmd"><div class="lbl">UserAssist (GUI launches)</div><div class="cc">NTUSER\Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist</div></div>
+      <div class="cmd"><div class="lbl">BAM / DAM</div><div class="cc">SYSTEM\CurrentControlSet\Services\bam\State\UserSettings\&lt;SID&gt;</div></div>
+      <div class="cmd"><div class="lbl">SRUM (resource usage DB)</div><div class="cc">C:\Windows\System32\sru\SRUDB.dat <span class="cmt"># srum-dump</span></div></div>
+    </div>
+  </div>
+
+  <div class="c c-g">
+    <div class="ch"><span class="ci">📂</span><span class="ct">04 · File Access &amp; Knowledge</span></div>
+    <div class="cmds">
+      <div class="cmd"><div class="lbl">Shellbags (folder nav history)</div><div class="cc">UsrClass.dat\...\Shell\BagMRU <span class="cmt"># SBECmd</span></div></div>
+      <div class="cmd"><div class="lbl">LNK / Jump Lists</div><div class="cc">%APPDATA%\...\Recent; AutomaticDestinations <span class="cmt"># LECmd, JLECmd</span></div></div>
+      <div class="cmd"><div class="lbl">Recent Docs / Office MRU</div><div class="cc">NTUSER\Software\Microsoft\Office\&lt;v&gt;\&lt;app&gt;\File MRU</div></div>
+      <div class="cmd"><div class="lbl">Thumbcache / Thumbs.db</div><div class="cc">%LOCALAPPDATA%\Microsoft\Windows\Explorer\thumbcache_*.db</div></div>
+      <div class="cmd"><div class="lbl">WordWheelQuery (search terms)</div><div class="cc">NTUSER\...\Explorer\WordWheelQuery</div></div>
+      <div class="cmd"><div class="lbl">OpenSavePidlMRU</div><div class="cc">NTUSER\...\ComDlg32\OpenSavePidlMRU</div></div>
+    </div>
+  </div>
+
+  <div class="c c-t">
+    <div class="ch"><span class="ci">🌐</span><span class="ct">04 · Browser Forensics</span></div>
+    <div class="cmds">
+      <div class="cmd"><div class="lbl">Chromium (Chrome/Edge/Brave)</div><div class="cc">%LOCALAPPDATA%\&lt;vendor&gt;\User Data\Default\<br>History · Cookies · Login Data · Bookmarks</div></div>
+      <div class="cmd"><div class="lbl">Firefox profile</div><div class="cc">%APPDATA%\Mozilla\Firefox\Profiles\*.default*\<br>places.sqlite · formhistory.sqlite</div></div>
+      <div class="cmd"><div class="lbl">Safari (macOS)</div><div class="cc">~/Library/Safari/History.db · Downloads.plist</div></div>
+      <div class="cmd"><div class="lbl">Unified parse (browsers + IM)</div><div class="cc">hindsight -i <span class="val">"User Data"</span>; DB Browser for SQLite</div></div>
+      <div class="cmd"><div class="lbl">Cache &amp; downloads</div><div class="cc">Cache_Data\data_* · Zone.Identifier ADS (MOTW)</div></div>
+      <div class="cmd"><div class="lbl">Private mode residue</div><div class="cc"><span class="cmt"># pagefile, memory, WebCacheV01.dat (Edge Legacy)</span></div></div>
+    </div>
+  </div>
+
+  <div class="c c-p">
+    <div class="ch"><span class="ci">✉</span><span class="ct">04 · Email &amp; USB</span></div>
+    <div class="cmds">
+      <div class="cmd"><div class="lbl">Outlook PST / OST</div><div class="cc">%LOCALAPPDATA%\Microsoft\Outlook\*.pst <span class="cmt"># pffexport</span></div></div>
+      <div class="cmd"><div class="lbl">Thunderbird mbox</div><div class="cc">%APPDATA%\Thunderbird\Profiles\*\Mail\*</div></div>
+      <div class="cmd"><div class="lbl">Email headers (origin IP)</div><div class="cc"><span class="cmt"># Received: chain, SPF/DKIM results, Message-ID</span></div></div>
+      <div class="cmd"><div class="lbl">USB device history</div><div class="cc">SYSTEM\...\Enum\USBSTOR · USB · MountedDevices</div></div>
+      <div class="cmd"><div class="lbl">First/Last connect times</div><div class="cc">SYSTEM\...\DeviceClasses\{53f56307-...} <span class="cmt"># USBDeview</span></div></div>
+      <div class="cmd"><div class="lbl">Volume → drive letter mapping</div><div class="cc">SOFTWARE\Microsoft\Windows Portable Devices\Devices</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="g">
+  <div class="c c-b s2">
+    <div class="ch"><span class="ci">📋</span><span class="ct">04 · Key Windows Event IDs (Forensic Value)</span></div>
+    <div class="tc2">
+      <div>
+        <div class="sl">Security.evtx</div>
+        <div class="tw"><table class="et">
+          <thead><tr><th>ID</th><th>Event</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr class="cr"><td>4624</td><td>Logon success</td><td>Type tells channel</td></tr>
+            <tr class="cr"><td>4634/4647</td><td>Logoff</td><td>Session bounds</td></tr>
+            <tr class="wa"><td>4688</td><td>Process creation</td><td>Cmdline if enabled</td></tr>
+            <tr class="wa"><td>4663</td><td>Object access</td><td>SACL required</td></tr>
+            <tr class="in"><td>4720/4726</td><td>Account created/del</td><td>User lifecycle</td></tr>
+            <tr class="cr"><td>1102</td><td>Security log cleared</td><td>🚨 anti-forensics</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div>
+        <div class="sl">System &amp; App Logs</div>
+        <div class="tw"><table class="et">
+          <thead><tr><th>ID</th><th>Source</th><th>Evidence</th></tr></thead>
+          <tbody>
+            <tr class="in"><td>6005/6006</td><td>EventLog</td><td>Boot / shutdown</td></tr>
+            <tr class="wa"><td>7045</td><td>Svc Ctrl Mgr</td><td>New service</td></tr>
+            <tr class="cr"><td>104</td><td>EventLog-System</td><td>Log cleared</td></tr>
+            <tr class="wa"><td>4104</td><td>PS Operational</td><td>Script block</td></tr>
+            <tr class="in"><td>1149</td><td>RDP Local Sess</td><td>RDP source IP</td></tr>
+            <tr class="cr"><td>4616</td><td>System time change</td><td>🚨 anti-forensics</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="c c-t s2">
+    <div class="ch"><span class="ci">🕒</span><span class="ct">04 · Timeline Construction</span></div>
+    <div class="tc3">
+      <div>
+        <div class="sl">Plaso / log2timeline</div>
+        <div class="cmds">
+          <div class="cmd"><div class="lbl">Collect timeline</div><div class="cc"><span class="kw">log2timeline.py</span> <span class="val">case.plaso</span> /mnt/evidence</div></div>
+          <div class="cmd"><div class="lbl">Narrow + export CSV</div><div class="cc"><span class="kw">psort.py</span> -o l2tcsv -w <span class="val">tl.csv</span> case.plaso <span class="val">"date &gt; '2026-04-01'"</span></div></div>
+          <div class="cmd"><div class="lbl">Filter by artefact</div><div class="cc"><span class="cmt"># parser:mft,winreg,usnjrnl,winevtx</span></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="sl">Supertimeline Sources</div>
+        <div class="cmds">
+          <div class="cmd"><div class="lbl">Filesystem</div><div class="cc">$MFT · $UsnJrnl · $LogFile</div></div>
+          <div class="cmd"><div class="lbl">Registry</div><div class="cc">NTUSER · SOFTWARE · SYSTEM · Amcache</div></div>
+          <div class="cmd"><div class="lbl">Logs &amp; execution</div><div class="cc">EVTX · Prefetch · SRUM · browser</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="sl">Analysis Workflow</div>
+        <div class="cmds">
+          <div class="cmd"><div class="lbl">Pivot on known IOC</div><div class="cc"><span class="cmt"># IP / hash / filename / user / time</span></div></div>
+          <div class="cmd"><div class="lbl">±15 min window</div><div class="cc"><span class="cmt"># catch parent &amp; sibling activity</span></div></div>
+          <div class="cmd"><div class="lbl">Cross-validate</div><div class="cc"><span class="cmt"># MFT ≠ Prefetch ≠ Registry → timestomp</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="g">
+  <div class="c c-r">
+    <div class="ch"><span class="ci">🕳</span><span class="ct">04 · Deleted &amp; Hidden Data</span></div>
+    <div class="cmds">
+      <div class="cmd"><div class="lbl">Recover by carving</div><div class="cc"><span class="kw">photorec</span> /d <span class="val">out/</span> <span class="val">case.raw</span>; <span class="kw">scalpel</span> -c scalpel.conf</div></div>
+      <div class="cmd"><div class="lbl">Recycle Bin metadata</div><div class="cc">$I files → original name/path/size; $R = content</div></div>
+      <div class="cmd"><div class="lbl">Unallocated / slack space</div><div class="cc"><span class="kw">blkls</span> -A <span class="val">case.raw</span> &gt; unalloc.bin; <span class="kw">bulk_extractor</span></div></div>
+      <div class="cmd"><div class="lbl">NTFS ADS (hidden streams)</div><div class="cc"><span class="kw">dir</span> /r; <span class="kw">Get-Item</span> * -Stream *</div></div>
+      <div class="cmd"><div class="lbl">Volume Shadow Copies</div><div class="cc"><span class="kw">vssadmin</span> list shadows; <span class="kw">vshadowmount</span></div></div>
+      <div class="cmd"><div class="lbl">Steganography triage</div><div class="cc">zsteg · stegsolve · exiftool · binwalk -e</div></div>
+    </div>
+  </div>
+
+  <div class="c c-p">
+    <div class="ch"><span class="ci">🧠</span><span class="ct">04 · Volatility3 Plugins</span></div>
+    <div class="cmds">
+      <div class="cmd"><div class="lbl">Process tree</div><div class="cc">vol -f <span class="val">mem.raw</span> windows.pstree</div></div>
+      <div class="cmd"><div class="lbl">Hidden / unlinked procs</div><div class="cc">vol -f <span class="val">mem.raw</span> windows.psscan</div></div>
+      <div class="cmd"><div class="lbl">Command history</div><div class="cc">vol -f <span class="val">mem.raw</span> windows.cmdline</div></div>
+      <div class="cmd"><div class="lbl">Injected / hollowed code</div><div class="cc">vol -f <span class="val">mem.raw</span> windows.malfind</div></div>
+      <div class="cmd"><div class="lbl">Registry hives in RAM</div><div class="cc">vol -f <span class="val">mem.raw</span> windows.registry.hivelist</div></div>
+      <div class="cmd"><div class="lbl">Dump process memory</div><div class="cc">vol -f <span class="val">mem.raw</span> windows.dumpfiles --pid <span class="val">1234</span></div></div>
+    </div>
+  </div>
+
+  <div class="c c-a">
+    <div class="ch"><span class="ci">📡</span><span class="ct">04 · Network Forensics</span></div>
+    <div class="cmds">
+      <div class="cmd"><div class="lbl">Capture filter</div><div class="cc"><span class="kw">tcpdump</span> -i any -s0 -w <span class="val">case.pcap</span> <span class="val">"host 10.0.0.5"</span></div></div>
+      <div class="cmd"><div class="lbl">Extract files from PCAP</div><div class="cc"><span class="kw">tshark</span> --export-objects <span class="val">"http,out/"</span> -r case.pcap</div></div>
+      <div class="cmd"><div class="lbl">NetworkMiner / Brim</div><div class="cc"><span class="cmt"># auto-reassemble sessions, files, creds</span></div></div>
+      <div class="cmd"><div class="lbl">Zeek for session logs</div><div class="cc">zeek -r <span class="val">case.pcap</span>; cat conn.log http.log dns.log</div></div>
+      <div class="cmd"><div class="lbl">JA3 / TLS fingerprint</div><div class="cc"><span class="cmt"># ssl.log ja3 / ja3s fields</span></div></div>
+      <div class="cmd"><div class="lbl">Decrypt TLS (if keys)</div><div class="cc">Wireshark → Prefs → TLS → (Pre)-Master-Secret log</div></div>
+    </div>
+  </div>
+
+  <div class="c c-g">
+    <div class="ch"><span class="ci">📱</span><span class="ct">04 · Mobile &amp; Cloud</span></div>
+    <div class="cmds">
+      <div class="cmd"><div class="lbl">iOS logical (backup)</div><div class="cc">idevicebackup2 backup <span class="val">out/</span>; iLEAPP / Cellebrite</div></div>
+      <div class="cmd"><div class="lbl">Android ADB</div><div class="cc"><span class="kw">adb</span> backup -all -apk -shared; ALEAPP</div></div>
+      <div class="cmd"><div class="lbl">Chip-off / JTAG</div><div class="cc"><span class="cmt"># physical extraction, last resort</span></div></div>
+      <div class="cmd"><div class="lbl">Cloud preservation</div><div class="cc"><span class="cmt"># Legal hold → M365 eDiscovery, Google Vault</span></div></div>
+      <div class="cmd"><div class="lbl">Cloud logs</div><div class="cc">AWS CloudTrail · Azure Activity · GCP Audit</div></div>
+      <div class="cmd"><div class="lbl">Sync artefacts</div><div class="cc">OneDrive .ini · Dropbox config.dbx · iCloud .plist</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="g">
+  <div class="c c-r">
+    <div class="ch"><span class="ci">🚨</span><span class="ct">Anti-Forensics Red Flags</span></div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div class="al r"><span class="ali">⚠</span><div>$SI timestamps earlier than $FN — classic timestomp signature</div></div>
+      <div class="al r"><span class="ali">⚠</span><div>EID 1102 / 104 — Security or System log cleared</div></div>
+      <div class="al r"><span class="ali">⚠</span><div>EID 4616 — system time changed mid-activity</div></div>
+      <div class="al r"><span class="ali">⚠</span><div>USN entries for files no longer on disk — secure deletion</div></div>
+      <div class="al a"><span class="ali">⚡</span><div>sdelete / cipher /w / BleachBit presence in prefetch</div></div>
+      <div class="al a"><span class="ali">⚡</span><div>VSS deletion (vssadmin delete shadows) immediately before incident</div></div>
+      <div class="al a"><span class="ali">⚡</span><div>Unusually uniform cluster entropy — wipe/overwrite pattern</div></div>
+    </div>
+  </div>
+
+  <div class="c c-p s2">
+    <div class="ch"><span class="ci">🗺</span><span class="ct">ATT&amp;CK — Defense Evasion / Anti-Forensics</span></div>
+    <div class="tc2">
+      <div class="atk">
+        <div class="ap"><strong>T1070.001</strong>Clear Windows Event Logs</div>
+        <div class="ap"><strong>T1070.004</strong>File Deletion</div>
+        <div class="ap"><strong>T1070.006</strong>Timestomp</div>
+        <div class="ap"><strong>T1070.008</strong>Clear Mailbox Data</div>
+        <div class="ap"><strong>T1490</strong>Inhibit System Recovery</div>
+        <div class="ap"><strong>T1485</strong>Data Destruction</div>
+        <div class="ap"><strong>T1027</strong>Obfuscated Files</div>
+        <div class="ap"><strong>T1564.004</strong>NTFS ADS</div>
+      </div>
+      <div class="atk">
+        <div class="ap"><strong>T1562.001</strong>Disable Security Tools</div>
+        <div class="ap"><strong>T1562.002</strong>Disable Event Logging</div>
+        <div class="ap"><strong>T1553</strong>Subvert Trust Controls</div>
+        <div class="ap"><strong>T1497</strong>VM / Sandbox Evasion</div>
+        <div class="ap"><strong>T1480</strong>Execution Guardrails</div>
+        <div class="ap"><strong>T1222</strong>File Permissions Mod</div>
+        <div class="ap"><strong>T1216</strong>Signed Script Proxy</div>
+        <div class="ap"><strong>T1036</strong>Masquerading</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="c c-t">
+    <div class="ch"><span class="ci">🛠</span><span class="ct">Forensic Toolbox</span></div>
+    <div class="cmds">
+      <div class="cmd"><div class="lbl">Imaging &amp; triage</div><div class="cc"><span class="val">FTK Imager</span> · <span class="val">dcfldd</span> · <span class="val">ewfacquire</span> · <span class="val">KAPE</span></div></div>
+      <div class="cmd"><div class="lbl">Artefact parsing (EZ Tools)</div><div class="cc"><span class="val">MFTECmd</span> · <span class="val">PECmd</span> · <span class="val">LECmd</span> · <span class="val">RECmd</span> · <span class="val">SBECmd</span> · <span class="val">EvtxECmd</span></div></div>
+      <div class="cmd"><div class="lbl">Suites / all-in-one</div><div class="cc"><span class="val">Autopsy</span> · <span class="val">X-Ways</span> · <span class="val">EnCase</span> · <span class="val">Magnet AXIOM</span></div></div>
+      <div class="cmd"><div class="lbl">Memory / malware</div><div class="cc"><span class="val">Volatility3</span> · <span class="val">Rekall</span> · <span class="val">bulk_extractor</span> · <span class="val">YARA</span></div></div>
+      <div class="cmd"><div class="lbl">Timeline / hunting</div><div class="cc"><span class="val">Plaso/log2timeline</span> · <span class="val">Timesketch</span> · <span class="val">Chainsaw</span> · <span class="val">Hayabusa</span></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="bnr">
+  <div class="bnh"><span class="ci">⚡</span><span class="ct" style="color:#fff">Triage Collection w/ KAPE (collect key artefacts before full image)</span></div>
+  <div class="bnb">
+    kape.exe --tsource <span class="val">C:</span> --target <span class="val">!SANS_Triage</span> --tdest <span class="val">E:\Triage\%m</span> --tflush --zip <span class="val">%m</span> --gui <span class="cmt"># then</span> kape.exe --msource <span class="val">E:\Triage\HOST</span> --module <span class="val">!EZParser</span> --mdest <span class="val">E:\Parsed\%m</span> --mflush <span class="cmt"># produces MFT, USN, EVTX, Registry, Prefetch, AmCache, browser, $J parsed to CSV</span>
+  </div>
+</div>
+
+<div class="ft">
+  <span>Digital Forensics Examiner Reference · Verify against case-specific OS / filesystem versions · Preserve originals</span>
+  <span>NIST SP 800-86 · ISO/IEC 27037 · SWGDE Best Practices</span>
+</div>
+</div></body></html>

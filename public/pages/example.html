@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Example Visualization</title>
+    <style>
+      body {
+        font: 16px/1.6 system-ui, sans-serif;
+        margin: 0;
+        background: #0b1020;
+        color: #e6e8ee;
+      }
+      .wrap {
+        max-width: 760px;
+        margin: 40px auto;
+        padding: 0 20px;
+      }
+      h1 {
+        color: #6ea8ff;
+      }
+      .bars {
+        display: grid;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      .bar {
+        display: grid;
+        grid-template-columns: 140px 1fr 60px;
+        align-items: center;
+        gap: 12px;
+      }
+      .bar__fill {
+        height: 14px;
+        border-radius: 7px;
+        background: linear-gradient(90deg, #6ea8ff, #a17bff);
+      }
+      .bar__label {
+        color: #cdd3e0;
+      }
+      .bar__val {
+        text-align: right;
+        color: #8a92a6;
+        font-variant-numeric: tabular-nums;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Example Visualization</h1>
+      <p>A stand-in for a Claude-generated chart or explainer.</p>
+      <div class="bars">
+        <div class="bar">
+          <span class="bar__label">Phishing</span>
+          <span class="bar__fill" style="width: 82%"></span>
+          <span class="bar__val">82%</span>
+        </div>
+        <div class="bar">
+          <span class="bar__label">Malware</span>
+          <span class="bar__fill" style="width: 57%"></span>
+          <span class="bar__val">57%</span>
+        </div>
+        <div class="bar">
+          <span class="bar__label">Credential Theft</span>
+          <span class="bar__fill" style="width: 49%"></span>
+          <span class="bar__val">49%</span>
+        </div>
+        <div class="bar">
+          <span class="bar__label">Insider Threat</span>
+          <span class="bar__fill" style="width: 23%"></span>
+          <span class="bar__val">23%</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

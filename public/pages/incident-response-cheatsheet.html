@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Windows AD Incident Response Cheat Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#E84040;--red-dim:rgba(232,64,64,.12);
+  --amber:#E8952A;--amber-dim:rgba(232,149,42,.12);
+  --green:#2EAD6C;--green-dim:rgba(46,173,108,.10);
+  --blue:#3A8DD6;--blue-dim:rgba(58,141,214,.10);
+  --purple:#7C5CBF;--purple-dim:rgba(124,92,191,.10);
+  --teal:#1D9E8A;--teal-dim:rgba(29,158,138,.10);
+  --bg:#0C0D0F;--sf:#131519;--sf2:#1A1D23;
+  --bd:rgba(255,255,255,.07);--bdhi:rgba(255,255,255,.13);
+  --tx:#E8E6E0;--dm:#8A8880;--dm2:#555450;
+  --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:var(--mono);font-size:12px;line-height:1.5;padding:14px 12px 40px}
+.page{max-width:1280px;margin:0 auto}
+
+/* Header */
+.hdr{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--bd)}
+.hdr-l{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.skull{width:38px;height:38px;flex-shrink:0;background:var(--red-dim);border:1px solid var(--red);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:19px}
+.t1{font-family:var(--sans);font-size:clamp(13px,2.8vw,20px);font-weight:800;color:#fff;line-height:1.15}
+.t2{font-size:10px;color:var(--dm);margin-top:2px}
+.badges{display:flex;gap:5px;flex-wrap:wrap}
+.b{font-family:var(--sans);font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap}
+.b-r{background:var(--red-dim);color:var(--red);border:1px solid rgba(232,64,64,.3)}
+.b-a{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(232,149,42,.3)}
+.b-g{background:var(--green-dim);color:var(--green);border:1px solid rgba(46,173,108,.3)}
+.b-b{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(58,141,214,.3)}
+.b-p{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(124,92,191,.3)}
+.b-t{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(29,158,138,.3)}
+
+/* Phase bar */
+.phases{display:flex;margin-bottom:14px;border:1px solid var(--bdhi);border-radius:8px;overflow:hidden;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ph{flex:1;min-width:64px;padding:7px 5px;text-align:center;font-family:var(--sans);font-size:8.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;border-right:1px solid var(--bd)}
+.ph:last-child{border-right:none}
+.phn{display:block;font-size:14px;font-weight:800;margin-bottom:1px}
+.ph1{background:rgba(232,64,64,.08);color:var(--red)}
+.ph2{background:rgba(232,149,42,.08);color:var(--amber)}
+.ph3{background:rgba(58,141,214,.08);color:var(--blue)}
+.ph4{background:rgba(124,92,191,.08);color:var(--purple)}
+.ph5{background:rgba(29,158,138,.08);color:var(--teal)}
+.ph6{background:rgba(46,173,108,.08);color:var(--green)}
+
+/* Grid system */
+.g{display:grid;gap:11px;grid-template-columns:repeat(4,1fr);margin-bottom:11px}
+.s2{grid-column:span 2}.s3{grid-column:span 3}.s4{grid-column:span 4}
+@media(max-width:860px){
+  .g{grid-template-columns:repeat(2,1fr)}
+  .s2,.s3,.s4{grid-column:span 2!important}
+}
+@media(max-width:500px){
+  .g{grid-template-columns:1fr}
+  .s2,.s3,.s4{grid-column:1!important}
+}
+
+/* Cards */
+.c{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px 12px 10px;display:flex;flex-direction:column;gap:8px}
+.c-r{border-top:2px solid var(--red)}.c-a{border-top:2px solid var(--amber)}
+.c-b{border-top:2px solid var(--blue)}.c-p{border-top:2px solid var(--purple)}
+.c-t{border-top:2px solid var(--teal)}.c-g{border-top:2px solid var(--green)}
+.ch{display:flex;align-items:center;gap:7px;margin-bottom:1px}
+.ci{font-size:13px;flex-shrink:0}
+.ct{font-family:var(--sans);font-size:11px;font-weight:700;color:#fff;line-height:1.1}
+
+/* Commands */
+.cmds{display:flex;flex-direction:column;gap:4px}
+.cmd{background:var(--sf2);border:1px solid var(--bd);border-radius:5px;padding:5px 8px}
+.lbl{font-size:9px;color:var(--dm2);font-family:var(--sans);font-weight:500;text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+.cc{font-size:10px;color:#C8E6FF;word-break:break-all;line-height:1.4}
+.cc .kw{color:#9CDCFE}.cc .val{color:#CE9178}.cc .cmt{color:var(--dm2);font-style:italic}
+
+/* Checklist */
+.ck{display:flex;flex-direction:column;gap:3px}
+.ki{display:flex;gap:6px;align-items:flex-start;font-size:10.5px;line-height:1.4}
+.kb{width:13px;height:13px;border:1px solid var(--bdhi);border-radius:3px;flex-shrink:0;margin-top:1px;background:var(--sf2)}
+.ki.crit .kb{border-color:var(--red)}.ki.warn .kb{border-color:var(--amber)}
+
+/* Inner two/three col grids */
+.tc2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.tc3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+@media(max-width:640px){.tc2,.tc3{grid-template-columns:1fr}}
+
+/* Section label */
+.sl{font-family:var(--sans);font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--dm2);margin-bottom:4px}
+
+/* Alert rows */
+.al{display:flex;align-items:flex-start;gap:6px;padding:5px 8px;border-radius:5px;font-size:10.5px;line-height:1.4}
+.al.r{background:var(--red-dim);border:1px solid rgba(232,64,64,.25);color:#F4A0A0}
+.al.a{background:var(--amber-dim);border:1px solid rgba(232,149,42,.25);color:#F4C87A}
+.ali{font-size:12px;flex-shrink:0}
+
+/* Event ID table */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.et{width:100%;border-collapse:collapse;font-size:10px;min-width:260px}
+.et th{font-family:var(--sans);font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--dm2);padding:3px 5px;text-align:left;border-bottom:1px solid var(--bd)}
+.et td{padding:3px 5px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:top;line-height:1.3}
+.et tr:last-child td{border-bottom:none}
+.et td:first-child{color:#9CDCFE;font-weight:500;white-space:nowrap}
+.et tr.cr td:first-child{color:var(--red)}.et tr.wa td:first-child{color:var(--amber)}.et tr.in td:first-child{color:var(--blue)}
+
+/* ATT&CK pills */
+.atk{display:flex;gap:5px;flex-wrap:wrap}
+.ap{background:var(--sf2);border:1px solid var(--bdhi);border-radius:4px;padding:3px 7px;font-size:9px;color:var(--dm)}
+.ap strong{color:var(--purple);font-weight:600;display:block;font-size:8px;font-family:var(--sans);text-transform:uppercase;letter-spacing:.4px}
+
+/* One-liner banner */
+.bnr{background:var(--sf);border:1px solid var(--bdhi);border-radius:10px;padding:11px 12px;margin-bottom:12px}
+.bnh{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.bnb{background:var(--bg);border:1px solid var(--bdhi);border-radius:5px;padding:8px 10px;font-size:9.5px;color:#D4D0C8;word-break:break-all;line-height:1.6;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.bnb .kw{color:#9CDCFE}.bnb .val{color:#CE9178}
+
+/* Footer */
+.ft{margin-top:16px;padding-top:10px;border-top:1px solid var(--bd);display:flex;justify-content:space-between;flex-wrap:wrap;gap:5px;font-size:9px;color:var(--dm2)}
+code{font-family:var(--mono);font-size:9.5px;color:#9CDCFE}
+</style>
+</head>
+<body><div class="page">
+
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="skull">💀</div>
+    <div><div class="t1">Windows / Active Directory — Incident Response</div><div class="t2">Compromised Host Triage · Lateral Movement Detection · Containment · Forensics</div></div>
+  </div>
+  <div class="badges">
+    <span class="b b-r">DFIR</span><span class="b b-a">Windows</span><span class="b b-b">Active Directory</span><span class="b b-p">ATT&amp;CK</span><span class="b b-t">PowerShell</span><span class="b b-g">Live Response</span>
+  </div>
+</div>
+
+<div class="phases">
+  <div class="ph ph1"><span class="phn">01</span>Identify</div>
+  <div class="ph ph2"><span class="phn">02</span>Isolate</div>
+  <div class="ph ph3"><span class="phn">03</span>Triage</div>
+  <div class="ph ph4"><span class="phn">04</span>Investigate</div>
+  <div class="ph ph5"><span class="phn">05</span>Eradicate</div>
+  <div class="ph ph6"><span class="phn">06</span>Recover</div>
+</div>
+
+<div class="g">
+  <div class="c c-r">
+    <div class="ch"><span class="ci">🔌</span><span class="ct">01 · Immediate Isolation</span></div>
+    <div class="ck">
+      <div class="ki crit"><div class="kb"></div><div>Disable NIC or pull cable — do NOT shutdown (preserve volatile memory)</div></div>
+      <div class="ki crit"><div class="kb"></div><div>Quarantine in firewall/NAC — block all except IR team source IP</div></div>
+      <div class="ki warn"><div class="kb"></div><div>Disable host AD account: <code>Disable-ADAccount -Identity HOSTNAME$</code></div></div>
+      <div class="ki warn"><div class="kb"></div><div>Reset KRBTGT password only if Golden Ticket suspected (twice, 10 hr apart)</div></div>
+      <div class="ki"><div class="kb"></div><div>Snapshot VM before any action if virtual — preserve disk state</div></div>
+      <div class="ki"><div class="kb"></div><div>Notify stakeholders, open incident ticket, start chain of custody log</div></div>
+    </div>
+  </div>
+
+  <div class="c c-a">
+    <div class="ch"><span class="ci">⚡</span><span class="ct">02 · Volatile Data — Capture First</span></div>
+    <div class="cmds">
+      <div class="cmd"><div class="lbl">Running processes + paths</div><div class="cc"><span class="kw">Get-Process</span> | <span class="kw">Select</span> Id,Name,Path,Company | <span class="kw">Sort</span> Name</div></div>
+      <div class="cmd"><div class="lbl">Network connections</div><div class="cc"><span class="kw">netstat</span> -anob <span class="cmt"># -b = owning process</span></div></div>
+      <div class="cmd"><div class="lbl">Active sessions / shares</div><div class="cc"><span class="kw">net</span> session; <span class="kw">net</span> use; <span class="kw">net</span> share</div></div>
+      <div class="cmd"><div class="lbl">Logged-on users</div><div class="cc"><span class="kw">quser</span>; <span class="kw">query</span> session</div></div>
+      <div class="cmd"><div class="lbl">DNS cache (C2 beacon clue)</div><div class="cc"><span class="kw">ipconfig</span> /displaydns | <span class="kw">findstr</span> <span class="val">"Record Name"</span></div></div>
+      <div class="cmd"><div class="lbl">Scheduled tasks</div><div class="cc"><span class="kw">schtasks</span> /query /fo LIST /v | <span class="kw">findstr</span> <span class="val">"TaskName Run"</span></div></div>
+    </div>
+  </div>
+
+  <div class="c c-a">
+    <div class="ch"><span class="ci">🧠</span><span class="ct">02 · Memory Acquisition</span></div>
+    <div class="cmds">
+      <div class="cmd"><div class="lbl">WinPmem (preferred)</div><div class="cc">winpmem_mini_x64.exe <span class="val">memory.aff4</span></div></div>
+      <div class="cmd"><div class="lbl">Magnet RAM Capture (GUI)</div><div class="cc"><span class="cmt"># Saves raw .mem — acquire before rebooting</span></div></div>
+      <div class="cmd"><div class="lbl">Volatility3 — process list</div><div class="cc">vol -f <span class="val">mem.raw</span> windows.pslist</div></div>
+      <div class="cmd"><div class="lbl">Volatility3 — cmdline history</div><div class="cc">vol -f <span class="val">mem.raw</span> windows.cmdline</div></div>
+      <div class="cmd"><div class="lbl">Volatility3 — network sockets</div><div class="cc">vol -f <span class="val">mem.raw</span> windows.netstat</div></div>
+      <div class="cmd"><div class="lbl">Volatility3 — injected code</div><div class="cc">vol -f <span class="val">mem.raw</span> windows.malfind</div></div>
+    </div>
+  </div>
+
+  <div class="c c-b">
+    <div class="ch"><span class="ci">🏰</span><span class="ct">03 · AD Recon Detection</span></div>
+    <div class="cmds">
+      <div class="cmd"><div class="lbl">Script block logging (EID 4104)</div><div class="cc"><span class="kw">Get-WinEvent</span> -LogName <span class="val">"Microsoft-Windows-PowerShell/Operational"</span></div></div>
+      <div class="cmd"><div class="lbl">LDAP recon (EID 1644 on DC)</div><div class="cc"><span class="cmt"># HKLM\...\NTDS\Diagnostics "15 Field Engineering" = 5</span></div></div>
+      <div class="cmd"><div class="lbl">New domain admins</div><div class="cc"><span class="kw">Get-ADGroupMember</span> <span class="val">"Domain Admins"</span> | <span class="kw">Select</span> Name,SamAccountName,WhenCreated</div></div>
+      <div class="cmd"><div class="lbl">Recently created accounts (7d)</div><div class="cc"><span class="kw">Get-ADUser</span> -Filter * -Properties WhenCreated | <span class="kw">Where</span> {$_.WhenCreated -gt (Get-Date).AddDays(<span class="val">-7</span>)}</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="g">
+  <div class="c c-b s2">
+    <div class="ch"><span class="ci">📋</span><span class="ct">04 · Critical Windows Event IDs</span></div>
+    <div class="tc2">
+      <div>
+        <div class="sl">Authentication &amp; Logon</div>
+        <div class="tw"><table class="et">
+          <thead><tr><th>ID</th><th>Description</th><th>Note</th></tr></thead>
+          <tbody>
+            <tr class="cr"><td>4624</td><td>Successful logon</td><td>Type 3/10/2</td></tr>
+            <tr class="cr"><td>4625</td><td>Failed logon</td><td>Brute force</td></tr>
+            <tr class="wa"><td>4648</td><td>Logon explicit creds</td><td>PtH indicator</td></tr>
+            <tr class="wa"><td>4672</td><td>Special privilege logon</td><td>Admin rights</td></tr>
+            <tr class="in"><td>4634</td><td>Logoff</td><td>Session duration</td></tr>
+            <tr class="cr"><td>4768</td><td>Kerberos TGT request</td><td>AS-REQ</td></tr>
+            <tr class="cr"><td>4769</td><td>Kerberos TGS request</td><td>Kerberoast</td></tr>
+            <tr class="cr"><td>4771</td><td>Kerberos pre-auth fail</td><td>ASREPRoast</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div>
+        <div class="sl">Privilege Escalation &amp; Persistence</div>
+        <div class="tw"><table class="et">
+          <thead><tr><th>ID</th><th>Description</th><th>Severity</th></tr></thead>
+          <tbody>
+            <tr class="cr"><td>4720</td><td>User account created</td><td>🔴 Persistence</td></tr>
+            <tr class="cr"><td>4728</td><td>Added to global group</td><td>🔴 DA group</td></tr>
+            <tr class="cr"><td>4732</td><td>Added to local group</td><td>🔴 Admins</td></tr>
+            <tr class="cr"><td>4756</td><td>Added universal group</td><td>🔴 Ent Admin</td></tr>
+            <tr class="wa"><td>4698</td><td>Scheduled task created</td><td>🟡 Persistence</td></tr>
+            <tr class="wa"><td>7045</td><td>New service installed</td><td>🟡 Exec/Persist</td></tr>
+            <tr class="cr"><td>4670</td><td>Object perms changed</td><td>🔴 ACL abuse</td></tr>
+            <tr class="cr"><td>4742</td><td>Computer acct changed</td><td>🔴 KCD abuse</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="c c-p s2">
+    <div class="ch"><span class="ci">🔀</span><span class="ct">04 · Lateral Movement — Techniques &amp; Detection</span></div>
+    <div class="tc3">
+      <div>
+        <div class="sl">Pass-the-Hash / Ticket</div>
+        <div class="cmds">
+          <div class="cmd"><div class="lbl">Detect Type 9 logons (PtH)</div><div class="cc"><span class="cmt"># Event 4624 Logon Type=9 + NTLM Auth</span></div></div>
+          <div class="cmd"><div class="lbl">LSASS dump attempts</div><div class="cc"><span class="cmt"># Sysmon EID 10 TargetImage=lsass.exe</span></div></div>
+          <div class="cmd"><div class="lbl">Kerb ticket cache</div><div class="cc"><span class="kw">klist</span> sessions; <span class="kw">klist</span> tgt</div></div>
+          <div class="cmd"><div class="lbl">Mimikatz on disk</div><div class="cc"><span class="kw">dir</span> C:\* /s /b | <span class="kw">findstr</span> <span class="val">mimikatz</span></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="sl">Remote Execution</div>
+        <div class="cmds">
+          <div class="cmd"><div class="lbl">PSRemoting sessions</div><div class="cc"><span class="kw">Get-PSSession</span>; <span class="cmt"># EID 4656, 400, 403</span></div></div>
+          <div class="cmd"><div class="lbl">WMI execution (EID 4688)</div><div class="cc"><span class="cmt"># ParentImage=WmiPrvSE.exe</span></div></div>
+          <div class="cmd"><div class="lbl">SC / PsExec drops</div><div class="cc"><span class="cmt"># EID 7045 ImagePath=\\&lt;src&gt;</span></div></div>
+          <div class="cmd"><div class="lbl">DCOM execution</div><div class="cc"><span class="cmt"># Sysmon EID 3 + parent=explorer</span></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="sl">Kerberos Attacks</div>
+        <div class="cmds">
+          <div class="cmd"><div class="lbl">Kerberoastable SPNs</div><div class="cc"><span class="kw">Get-ADUser</span> -Filter {ServicePrincipalName -ne <span class="val">"$null"</span>} -Properties ServicePrincipalName</div></div>
+          <div class="cmd"><div class="lbl">ASREPRoast targets</div><div class="cc"><span class="kw">Get-ADUser</span> -Filter {DoesNotRequirePreAuth -eq <span class="val">$true</span>}</div></div>
+          <div class="cmd"><div class="lbl">KRBTGT last reset</div><div class="cc"><span class="kw">Get-ADUser</span> krbtgt -Properties PasswordLastSet</div></div>
+          <div class="cmd"><div class="lbl">DCSync detection</div><div class="cc"><span class="cmt"># EID 4662 DS-Replication-Get-Changes-All</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="g">
+  <div class="c c-t">
+    <div class="ch"><span class="ci">🪝</span><span class="ct">05 · Persistence Hotspots</span></div>
+    <div class="cmds">
+      <div class="cmd"><div class="lbl">Registry Run keys</div><div class="cc">HKLM\Software\Microsoft\Windows\CurrentVersion\Run<br>HKCU\Software\Microsoft\Windows\CurrentVersion\Run</div></div>
+      <div class="cmd"><div class="lbl">Services &amp; drivers</div><div class="cc"><span class="kw">sc</span> query state= all | <span class="kw">findstr</span> <span class="val">"SERVICE_NAME STATE"</span></div></div>
+      <div class="cmd"><div class="lbl">Startup folders</div><div class="cc">%APPDATA%\...\Start Menu\Programs\Startup<br>C:\ProgramData\...\Start Menu\Programs\Startup</div></div>
+      <div class="cmd"><div class="lbl">WMI subscriptions (fileless)</div><div class="cc"><span class="kw">Get-WMIObject</span> -Namespace root\subscription -Class __EventFilter</div></div>
+      <div class="cmd"><div class="lbl">Active scheduled tasks</div><div class="cc"><span class="kw">Get-ScheduledTask</span> | <span class="kw">Where</span> State -ne <span class="val">Disabled</span></div></div>
+      <div class="cmd"><div class="lbl">IFEO / accessibility backdoors</div><div class="cc">HKLM\SOFTWARE\...\Image File Execution Options\*</div></div>
+    </div>
+  </div>
+
+  <div class="c c-b">
+    <div class="ch"><span class="ci">📁</span><span class="ct">05 · Key Log Sources &amp; Paths</span></div>
+    <div class="cmds">
+      <div class="cmd"><div class="lbl">Security / System / Application</div><div class="cc">C:\Windows\System32\winevt\Logs\Security.evtx</div></div>
+      <div class="cmd"><div class="lbl">PowerShell operational log</div><div class="cc">Microsoft-Windows-PowerShell%4Operational.evtx</div></div>
+      <div class="cmd"><div class="lbl">Sysmon (if deployed)</div><div class="cc">Microsoft-Windows-Sysmon%4Operational.evtx</div></div>
+      <div class="cmd"><div class="lbl">NTDS.dit (AD database — DC only)</div><div class="cc">C:\Windows\NTDS\ntds.dit <span class="cmt"># VSS shadow copy needed</span></div></div>
+      <div class="cmd"><div class="lbl">Prefetch (execution evidence)</div><div class="cc">C:\Windows\Prefetch\*.pf <span class="cmt"># PECmd to parse</span></div></div>
+      <div class="cmd"><div class="lbl">AmCache / ShimCache</div><div class="cc">C:\Windows\AppCompat\Programs\Amcache.hve</div></div>
+    </div>
+  </div>
+
+  <div class="c c-p">
+    <div class="ch"><span class="ci">🔍</span><span class="ct">05 · PowerShell Hunt Queries</span></div>
+    <div class="cmds">
+      <div class="cmd"><div class="lbl">Encoded command detection</div><div class="cc"><span class="kw">Get-WinEvent</span> -LogName <span class="val">"Microsoft-Windows-PowerShell/Operational"</span> | <span class="kw">Where</span> {$_.Message -like <span class="val">"*-EncodedCommand*"</span>}</div></div>
+      <div class="cmd"><div class="lbl">Suspicious parent processes</div><div class="cc"><span class="cmt"># Sysmon EID 1 ParentImage=winword|excel|outlook</span></div></div>
+      <div class="cmd"><div class="lbl">LOLBins in process creation</div><div class="cc"><span class="kw">Get-WinEvent</span> -Id <span class="val">4688</span> | <span class="kw">Where</span> {$_.Message -match <span class="val">"certutil|mshta|wscript|regsvr32|rundll32|bitsadmin"</span>}</div></div>
+      <div class="cmd"><div class="lbl">Unusual listening ports</div><div class="cc"><span class="kw">netstat</span> -anob | <span class="kw">Select-String</span> <span class="val">LISTEN</span></div></div>
+      <div class="cmd"><div class="lbl">Files written in last 24h</div><div class="cc"><span class="kw">Get-ChildItem</span> C:\ -Recurse -Force -ErrorAction SilentlyContinue | <span class="kw">Where</span> LastWriteTime -gt (Get-Date).AddHours(<span class="val">-24</span>)</div></div>
+    </div>
+  </div>
+
+  <div class="c c-g">
+    <div class="ch"><span class="ci">🧹</span><span class="ct">06 · Eradication &amp; Recovery</span></div>
+    <div class="ck">
+      <div class="ki crit"><div class="kb"></div><div>Remove malicious tasks, services, registry keys, WMI subscriptions</div></div>
+      <div class="ki crit"><div class="kb"></div><div>Disable / delete all rogue accounts — audit group memberships</div></div>
+      <div class="ki crit"><div class="kb"></div><div>Revoke all Kerberos tickets: <code>klist purge</code> on affected hosts</div></div>
+      <div class="ki warn"><div class="kb"></div><div>Reset passwords for ALL accounts that logged on to compromised host</div></div>
+      <div class="ki warn"><div class="kb"></div><div>Review service account passwords; remove unnecessary SPNs</div></div>
+      <div class="ki warn"><div class="kb"></div><div>Patch exploited vulnerability — confirm CVE ID before closing</div></div>
+      <div class="ki"><div class="kb"></div><div>Re-image from known-good baseline; restore from pre-incident backup</div></div>
+      <div class="ki"><div class="kb"></div><div>Validate detection rules; tune SIEM/EDR; conduct post-incident review</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="g">
+  <div class="c c-r">
+    <div class="ch"><span class="ci">🚨</span><span class="ct">Immediate Red Flags</span></div>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div class="al r"><span class="ali">⚠</span><div>LSASS memory reads from non-system processes — potential credential dump</div></div>
+      <div class="al r"><span class="ali">⚠</span><div>Mass 4625 failures then single 4624 success — password spray succeeded</div></div>
+      <div class="al r"><span class="ali">⚠</span><div>4769 RC4 encryption on non-default accounts — likely Kerberoasting</div></div>
+      <div class="al r"><span class="ali">⚠</span><div>KRBTGT ticket lifetime &gt;10 years in 4769 — Golden Ticket indicator</div></div>
+      <div class="al a"><span class="ali">⚡</span><div>PowerShell DownloadString / IEX in script block logs — download cradle</div></div>
+      <div class="al a"><span class="ali">⚡</span><div>DCSync: replication rights on non-DC — EID 4662 + DS-Replication</div></div>
+      <div class="al a"><span class="ali">⚡</span><div>New local admin outside change window (EID 4720 + 4732)</div></div>
+    </div>
+  </div>
+
+  <div class="c c-p s2">
+    <div class="ch"><span class="ci">🗺</span><span class="ct">ATT&amp;CK Techniques — Common in AD Compromises</span></div>
+    <div class="tc2">
+      <div class="atk">
+        <div class="ap"><strong>T1003.001</strong>LSASS Memory Dump</div>
+        <div class="ap"><strong>T1558.003</strong>Kerberoasting</div>
+        <div class="ap"><strong>T1558.004</strong>AS-REP Roasting</div>
+        <div class="ap"><strong>T1550.002</strong>Pass-the-Hash</div>
+        <div class="ap"><strong>T1550.003</strong>Pass-the-Ticket</div>
+        <div class="ap"><strong>T1558.001</strong>Golden Ticket</div>
+        <div class="ap"><strong>T1558.002</strong>Silver Ticket</div>
+        <div class="ap"><strong>T1484.001</strong>GPO Modification</div>
+      </div>
+      <div class="atk">
+        <div class="ap"><strong>T1059.001</strong>PowerShell</div>
+        <div class="ap"><strong>T1047</strong>WMI Execution</div>
+        <div class="ap"><strong>T1021.006</strong>WinRM / PSRemoting</div>
+        <div class="ap"><strong>T1021.002</strong>SMB / Admin Shares</div>
+        <div class="ap"><strong>T1053.005</strong>Scheduled Task</div>
+        <div class="ap"><strong>T1098.001</strong>Account Manipulation</div>
+        <div class="ap"><strong>T1207</strong>Rogue DC (DCShadow)</div>
+        <div class="ap"><strong>T1134</strong>Token Impersonation</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="c c-t">
+    <div class="ch"><span class="ci">🛠</span><span class="ct">IR Toolbox</span></div>
+    <div class="cmds">
+      <div class="cmd"><div class="lbl">Memory forensics</div><div class="cc"><span class="val">Volatility3</span> · <span class="val">WinPmem</span> · <span class="val">Magnet RAM Capture</span></div></div>
+      <div class="cmd"><div class="lbl">Artefact parsing (EZ Tools)</div><div class="cc"><span class="val">PECmd</span> · <span class="val">LECmd</span> · <span class="val">MFTECmd</span> · <span class="val">EvtxECmd</span> · <span class="val">AppCompatCacheParser</span></div></div>
+      <div class="cmd"><div class="lbl">AD enumeration / attack sim</div><div class="cc"><span class="val">BloodHound/SharpHound</span> · <span class="val">PowerView</span> · <span class="val">ADExplorer</span></div></div>
+      <div class="cmd"><div class="lbl">Network capture</div><div class="cc"><span class="val">Wireshark</span> · <span class="val">NetworkMiner</span> · <span class="kw">netsh</span> trace start capture=yes</div></div>
+      <div class="cmd"><div class="lbl">Log analysis / SIEM hunting</div><div class="cc"><span class="val">Chainsaw</span> · <span class="val">Hayabusa</span> · <span class="val">DeepBlueCLI</span> · <span class="val">Sigma rules</span></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="bnr">
+  <div class="bnh"><span class="ci">⚡</span><span class="ct" style="color:#fff">One-Shot Triage Collection (run as SYSTEM/Admin — PowerShell)</span></div>
+  <div class="bnb">
+    $out=<span class="val">"C:\IR_$(hostname)_$(Get-Date -f yyyyMMdd_HHmm)"</span>; md $out; <span class="kw">Get-Process</span>|Export-Csv <span class="val">"$out\procs.csv"</span> -NoType; netstat -anob &gt; <span class="val">"$out\netstat.txt"</span>; <span class="kw">Get-Service</span>|Export-Csv <span class="val">"$out\svc.csv"</span> -NoType; ipconfig /displaydns &gt; <span class="val">"$out\dns.txt"</span>; <span class="kw">Get-ScheduledTask</span>|Export-Csv <span class="val">"$out\tasks.csv"</span> -NoType; <span class="kw">net</span> session &gt; <span class="val">"$out\sessions.txt"</span>; <span class="kw">Get-LocalGroupMember</span> Administrators &gt; <span class="val">"$out\local_admins.txt"</span>; wevtutil epl Security <span class="val">"$out\Security.evtx"</span>; wevtutil epl System <span class="val">"$out\System.evtx"</span>
+  </div>
+</div>
+
+<div class="ft">
+  <span>Windows / AD Incident Response · For defensive use only · Verify commands in lab before production use</span>
+  <span>MITRE ATT&amp;CK® · NIST SP 800-61</span>
+</div>
+</div></body></html>

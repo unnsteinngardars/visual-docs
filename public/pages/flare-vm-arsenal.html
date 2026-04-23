@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Arsenal of Tools</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0c0d0f;
+        --sf: #131519;
+        --sf2: #1a1d23;
+        --bd: rgba(255, 255, 255, 0.07);
+        --bdhi: rgba(255, 255, 255, 0.13);
+        --tx: #e8e6e0;
+        --dm: #8a8880;
+        --dm2: #555450;
+        --accent: #7c5cbf;
+        --accent-dim: rgba(124, 92, 191, 0.12);
+        --mono: "JetBrains Mono", monospace;
+        --sans: "Syne", sans-serif;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--tx);
+        font-family: var(--mono);
+        font-size: 13px;
+        line-height: 1.55;
+        padding: 28px 22px 48px;
+      }
+      .page {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .hdr {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding-bottom: 18px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid var(--bd);
+      }
+      .hdr .icon {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+        background: var(--accent-dim);
+        border: 1px solid var(--accent);
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-size: 22px;
+      }
+      .hdr h1 {
+        font-family: var(--sans);
+        font-size: clamp(18px, 3vw, 26px);
+        font-weight: 800;
+        color: #fff;
+        line-height: 1.15;
+      }
+      .hdr .sub {
+        margin-top: 3px;
+        font-size: 11px;
+        color: var(--dm);
+      }
+
+      .section {
+        margin-bottom: 32px;
+      }
+      .section h2 {
+        font-family: var(--sans);
+        font-size: 15px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: 0.02em;
+        margin-bottom: 6px;
+      }
+      .section .lead {
+        color: var(--dm);
+        font-size: 12px;
+        margin-bottom: 14px;
+        max-width: 780px;
+      }
+
+      .tools {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      }
+      .tool {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 12px 14px;
+        background: var(--sf);
+        border: 1px solid var(--bd);
+        border-left: 2px solid var(--accent);
+        border-radius: 8px;
+        text-decoration: none;
+        color: inherit;
+        transition:
+          background 0.12s ease,
+          border-color 0.12s ease,
+          transform 0.12s ease;
+      }
+      .tool:hover {
+        background: var(--sf2);
+        border-color: var(--bdhi);
+        border-left-color: var(--accent);
+        transform: translateY(-1px);
+      }
+      .tool__name {
+        font-family: var(--sans);
+        font-size: 13px;
+        font-weight: 700;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .tool__name::after {
+        content: "↗";
+        color: var(--dm2);
+        font-size: 11px;
+        transition: color 0.12s ease;
+      }
+      .tool:hover .tool__name::after {
+        color: var(--accent);
+      }
+      .tool__desc {
+        color: var(--dm);
+        font-size: 11.5px;
+        line-height: 1.45;
+      }
+
+      .ft {
+        margin-top: 28px;
+        padding-top: 14px;
+        border-top: 1px solid var(--bd);
+        font-size: 10px;
+        color: var(--dm2);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hdr">
+        <div class="icon">🔥</div>
+        <div>
+          <h1>Arsenal of Tools</h1>
+          <div class="sub">
+            Curated tooling for malware analysis, reverse engineering, and
+            offensive security research
+          </div>
+        </div>
+      </header>
+
+      <section class="section">
+        <h2>Reverse Engineering &amp; Debugging</h2>
+        <p class="lead">
+          Reverse engineering is like solving a puzzle backward — you take a
+          finished product apart to understand how it works. Debugging is
+          identifying errors, understanding why they happen, and correcting the
+          code to prevent them.
+        </p>
+        <div class="tools">
+          <a
+            class="tool"
+            href="https://ghidra-sre.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">Ghidra</span>
+            <span class="tool__desc"
+              >NSA-developed open-source reverse engineering suite.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="https://x64dbg.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">x64dbg</span>
+            <span class="tool__desc"
+              >Open-source debugger for binaries in x64 and x32 formats.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="https://www.ollydbg.de/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">OllyDbg</span>
+            <span class="tool__desc"
+              >Debugger for reverse engineering at the assembly level.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="https://rada.re/n/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">Radare2</span>
+            <span class="tool__desc"
+              >A sophisticated open-source platform for reverse
+              engineering.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="https://binary.ninja/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">Binary Ninja</span>
+            <span class="tool__desc"
+              >A tool for disassembling and decompiling binaries.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="https://www.aldeid.com/wiki/PEiD"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">PEiD</span>
+            <span class="tool__desc"
+              >Packer, cryptor, and compiler detection tool.</span
+            >
+          </a>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Disassemblers &amp; Decompilers</h2>
+        <p class="lead">
+          Disassemblers and decompilers are crucial tools in malware analysis.
+          They help analysts understand malicious software's behaviour, logic,
+          and control flow by breaking it into a more understandable format.
+          The tools below are commonly used in this category.
+        </p>
+        <div class="tools">
+          <a
+            class="tool"
+            href="https://ntcore.com/?page_id=388"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">CFF Explorer</span>
+            <span class="tool__desc"
+              >A PE editor designed to analyze and edit Portable Executable
+              (PE) files.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="https://www.hopperapp.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">Hopper Disassembler</span>
+            <span class="tool__desc"
+              >A debugger, disassembler, and decompiler.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="https://retdec.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">RetDec</span>
+            <span class="tool__desc"
+              >Open-source decompiler for machine code.</span
+            >
+          </a>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Static &amp; Dynamic Analysis</h2>
+        <p class="lead">
+          Static and dynamic analysis are two crucial methods in cyber security
+          for examining malware. Static analysis involves inspecting the code
+          without executing it, while dynamic analysis involves observing its
+          behaviour as it runs. The tools below are commonly used in this
+          category.
+        </p>
+        <div class="tools">
+          <a
+            class="tool"
+            href="https://processhacker.sourceforge.io/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">Process Hacker</span>
+            <span class="tool__desc"
+              >Sophisticated memory editor and process watcher.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="http://wjradburn.com/software/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">PEview</span>
+            <span class="tool__desc"
+              >A portable executable (PE) file viewer for analysis.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="https://www.dependencywalker.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">Dependency Walker</span>
+            <span class="tool__desc"
+              >A tool for displaying an executable's DLL dependencies.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="https://github.com/horsicq/Detect-It-Easy"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">DIE (Detect It Easy)</span>
+            <span class="tool__desc"
+              >A packer, compiler, and cryptor detection tool.</span
+            >
+          </a>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Forensics &amp; Incident Response</h2>
+        <p class="lead">
+          Digital forensics involves the collection, analysis, and preservation
+          of digital evidence from various sources like computers, networks,
+          and storage devices. Incident response focuses on the detection,
+          containment, eradication, and recovery from cyberattacks. The tools
+          below are commonly used in this category.
+        </p>
+        <div class="tools">
+          <a
+            class="tool"
+            href="https://www.volatilityfoundation.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">Volatility</span>
+            <span class="tool__desc"
+              >RAM dump analysis framework for memory forensics.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="https://github.com/google/rekall"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">Rekall</span>
+            <span class="tool__desc"
+              >Framework for memory forensics in incident response.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="https://www.exterro.com/digital-forensics-software/ftk-imager"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">FTK Imager</span>
+            <span class="tool__desc"
+              >Disc image acquisition and analysis tools for forensic use.</span
+            >
+          </a>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Network Analysis</h2>
+        <p class="lead">
+          Network analysis includes different methods and techniques for
+          studying and analysing networks to uncover patterns, optimize
+          performance, and understand the underlying structure and behaviour of
+          the network.
+        </p>
+        <div class="tools">
+          <a
+            class="tool"
+            href="https://www.wireshark.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">Wireshark</span>
+            <span class="tool__desc"
+              >Network protocol analyzer for traffic recording and
+              examination.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="https://nmap.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">Nmap</span>
+            <span class="tool__desc"
+              >A vulnerability detection and network mapping tool.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="http://netcat.sourceforge.net/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">Netcat</span>
+            <span class="tool__desc"
+              >Read and write data across network connections with this helpful
+              tool.</span
+            >
+          </a>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>File Analysis</h2>
+        <p class="lead">
+          File analysis is a technique used to examine files for potential
+          security threats and ensure proper file permissions.
+        </p>
+        <div class="tools">
+          <a
+            class="tool"
+            href="https://www.aldeid.com/wiki/FileInsight"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">FileInsight</span>
+            <span class="tool__desc"
+              >A program for looking through and editing binary files.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="https://hexfiend.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">Hex Fiend</span>
+            <span class="tool__desc"
+              >Hex editor that is light and quick.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="https://mh-nexus.de/en/hxd/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">HxD</span>
+            <span class="tool__desc"
+              >Binary file viewing and editing with a hex editor.</span
+            >
+          </a>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Scripting &amp; Automation</h2>
+        <p class="lead">
+          Scripting and automation involve using scripts such as PowerShell and
+          Python to automate repetitive tasks and processes, making them more
+          efficient and less prone to human error.
+        </p>
+        <div class="tools">
+          <a
+            class="tool"
+            href="https://www.python.org/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">Python</span>
+            <span class="tool__desc"
+              >Mainly automation-focused on Python modules and tools.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="https://github.com/BC-SECURITY/Empire"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">PowerShell Empire</span>
+            <span class="tool__desc"
+              >Framework for PowerShell post-exploitation.</span
+            >
+          </a>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Sysinternals Suite</h2>
+        <p class="lead">
+          The Sysinternals Suite is a collection of advanced system utilities
+          designed to help IT professionals and developers manage, troubleshoot,
+          and diagnose Windows systems.
+        </p>
+        <div class="tools">
+          <a
+            class="tool"
+            href="https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">Autoruns</span>
+            <span class="tool__desc"
+              >Shows what executables are configured to run during system
+              boot-up.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="https://learn.microsoft.com/en-us/sysinternals/downloads/process-explorer"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">Process Explorer</span>
+            <span class="tool__desc"
+              >Provides information about running processes.</span
+            >
+          </a>
+          <a
+            class="tool"
+            href="https://learn.microsoft.com/en-us/sysinternals/downloads/procmon"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="tool__name">Process Monitor</span>
+            <span class="tool__desc"
+              >Monitors and logs real-time process/thread activity.</span
+            >
+          </a>
+        </div>
+      </section>
+
+      <footer class="ft">
+        Flare VM tool reference · Links open in a new tab · More categories
+        coming
+      </footer>
+    </div>
+  </body>
+</html>

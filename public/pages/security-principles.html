@@ -1,0 +1,1247 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Security Principles</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0c0d0f;
+        --sf: #131519;
+        --sf2: #1a1d23;
+        --bd: rgba(255, 255, 255, 0.07);
+        --bdhi: rgba(255, 255, 255, 0.13);
+        --tx: #e8e6e0;
+        --dm: #8a8880;
+        --dm2: #555450;
+        --c-c: #3a8dd6;
+        --c-c-dim: rgba(58, 141, 214, 0.12);
+        --c-i: #7c5cbf;
+        --c-i-dim: rgba(124, 92, 191, 0.12);
+        --c-a: #2ead6c;
+        --c-a-dim: rgba(46, 173, 108, 0.12);
+        --d-d: #e84040;
+        --d-d-dim: rgba(232, 64, 64, 0.12);
+        --d-a: #e8952a;
+        --d-a-dim: rgba(232, 149, 42, 0.12);
+        --d-x: #d14c7a;
+        --d-x-dim: rgba(209, 76, 122, 0.12);
+        --mono: "JetBrains Mono", monospace;
+        --sans: "Syne", sans-serif;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--tx);
+        font-family: var(--mono);
+        font-size: 13px;
+        line-height: 1.6;
+        padding: 28px 22px 48px;
+      }
+      .page {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      .hdr {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding-bottom: 18px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid var(--bd);
+      }
+      .hdr .icon {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--bdhi);
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-size: 22px;
+      }
+      .hdr h1 {
+        font-family: var(--sans);
+        font-size: clamp(18px, 3vw, 26px);
+        font-weight: 800;
+        color: #fff;
+        line-height: 1.15;
+      }
+      .hdr .sub {
+        margin-top: 3px;
+        font-size: 11px;
+        color: var(--dm);
+      }
+
+      .section {
+        margin-bottom: 32px;
+      }
+      .section h2 {
+        font-family: var(--sans);
+        font-size: 15px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: 0.02em;
+        margin-bottom: 8px;
+      }
+      .lead {
+        color: var(--dm);
+        font-size: 12.5px;
+        max-width: 820px;
+        margin-bottom: 18px;
+      }
+
+      .triad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+      @media (max-width: 840px) {
+        .triad {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .pillar {
+        background: var(--sf);
+        border: 1px solid var(--bd);
+        border-radius: 10px;
+        padding: 16px 16px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .pillar--c {
+        border-top: 2px solid var(--c-c);
+      }
+      .pillar--i {
+        border-top: 2px solid var(--c-i);
+      }
+      .pillar--a {
+        border-top: 2px solid var(--c-a);
+      }
+
+      .pillar__head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .pillar__badge {
+        width: 34px;
+        height: 34px;
+        flex-shrink: 0;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        font-family: var(--sans);
+        font-size: 14px;
+        font-weight: 800;
+        color: #fff;
+      }
+      .pillar--c .pillar__badge {
+        background: var(--c-c-dim);
+        border: 1px solid var(--c-c);
+        color: var(--c-c);
+      }
+      .pillar--i .pillar__badge {
+        background: var(--c-i-dim);
+        border: 1px solid var(--c-i);
+        color: var(--c-i);
+      }
+      .pillar--a .pillar__badge {
+        background: var(--c-a-dim);
+        border: 1px solid var(--c-a);
+        color: var(--c-a);
+      }
+      .pillar__title {
+        font-family: var(--sans);
+        font-size: 14px;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.15;
+      }
+      .pillar__tagline {
+        font-size: 10.5px;
+        color: var(--dm);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-top: 2px;
+      }
+
+      .pillar__body {
+        color: var(--tx);
+        font-size: 12.5px;
+        line-height: 1.6;
+      }
+
+      .pillar__list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .pillar__list li {
+        font-size: 11.5px;
+        color: var(--dm);
+        padding-left: 14px;
+        position: relative;
+      }
+      .pillar__list li::before {
+        content: "›";
+        position: absolute;
+        left: 0;
+        color: var(--dm2);
+      }
+      .pillar--c .pillar__list li::before {
+        color: var(--c-c);
+      }
+      .pillar--i .pillar__list li::before {
+        color: var(--c-i);
+      }
+      .pillar--a .pillar__list li::before {
+        color: var(--c-a);
+      }
+      .pillar--dd {
+        border-top: 2px solid var(--d-d);
+      }
+      .pillar--da {
+        border-top: 2px solid var(--d-a);
+      }
+      .pillar--dx {
+        border-top: 2px solid var(--d-x);
+      }
+      .pillar--dd .pillar__badge {
+        background: var(--d-d-dim);
+        border: 1px solid var(--d-d);
+        color: var(--d-d);
+      }
+      .pillar--da .pillar__badge {
+        background: var(--d-a-dim);
+        border: 1px solid var(--d-a);
+        color: var(--d-a);
+      }
+      .pillar--dx .pillar__badge {
+        background: var(--d-x-dim);
+        border: 1px solid var(--d-x);
+        color: var(--d-x);
+      }
+      .pillar--dd .pillar__list li::before {
+        color: var(--d-d);
+      }
+      .pillar--da .pillar__list li::before {
+        color: var(--d-a);
+      }
+      .pillar--dx .pillar__list li::before {
+        color: var(--d-x);
+      }
+
+      .mapping {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 6px;
+      }
+      @media (max-width: 640px) {
+        .mapping {
+          grid-template-columns: 1fr;
+        }
+      }
+      .mapping__row {
+        background: var(--sf2);
+        border: 1px solid var(--bd);
+        border-radius: 6px;
+        padding: 8px 10px;
+        font-size: 11px;
+        color: var(--dm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .mapping__row b {
+        font-family: var(--sans);
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .mapping__row .arrow {
+        color: var(--dm2);
+      }
+      .mapping__row .cia {
+        color: var(--c-c);
+      }
+      .mapping__row:nth-child(2) .cia {
+        color: var(--c-i);
+      }
+      .mapping__row:nth-child(3) .cia {
+        color: var(--c-a);
+      }
+      .mapping__row .dad {
+        color: var(--d-d);
+      }
+      .mapping__row:nth-child(2) .dad {
+        color: var(--d-a);
+      }
+      .mapping__row:nth-child(3) .dad {
+        color: var(--d-x);
+      }
+      .pillar__list strong {
+        color: var(--tx);
+        font-weight: 600;
+      }
+
+      .break {
+        background: var(--sf2);
+        border: 1px solid var(--bd);
+        border-left: 2px solid #e8952a;
+        border-radius: 8px;
+        padding: 12px 14px;
+        font-size: 11.5px;
+        color: var(--dm);
+      }
+      .break strong {
+        color: #e8952a;
+        font-family: var(--sans);
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      code {
+        background: var(--bg);
+        border: 1px solid var(--bd);
+        border-radius: 4px;
+        padding: 1px 5px;
+        font-size: 11px;
+        color: #9cdcfe;
+      }
+
+      .models {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(2, 1fr);
+      }
+      @media (max-width: 720px) {
+        .models {
+          grid-template-columns: 1fr;
+        }
+      }
+      .model {
+        background: var(--sf);
+        border: 1px solid var(--bd);
+        border-left: 2px solid var(--bdhi);
+        border-radius: 8px;
+        padding: 12px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .model--conf {
+        border-left-color: var(--c-c);
+      }
+      .model--int {
+        border-left-color: var(--c-i);
+      }
+      .model--avail {
+        border-left-color: var(--c-a);
+      }
+      .model--access {
+        border-left-color: #e8952a;
+      }
+      .model__head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .model__name {
+        font-family: var(--sans);
+        font-size: 13px;
+        font-weight: 700;
+        color: #fff;
+      }
+      .model__tag {
+        font-family: var(--sans);
+        font-size: 8.5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 2px 7px;
+        border-radius: 4px;
+        white-space: nowrap;
+      }
+      .model--conf .model__tag {
+        background: var(--c-c-dim);
+        color: var(--c-c);
+        border: 1px solid rgba(58, 141, 214, 0.3);
+      }
+      .model--int .model__tag {
+        background: var(--c-i-dim);
+        color: var(--c-i);
+        border: 1px solid rgba(124, 92, 191, 0.3);
+      }
+      .model--avail .model__tag {
+        background: var(--c-a-dim);
+        color: var(--c-a);
+        border: 1px solid rgba(46, 173, 108, 0.3);
+      }
+      .model--access .model__tag {
+        background: rgba(232, 149, 42, 0.12);
+        color: #e8952a;
+        border: 1px solid rgba(232, 149, 42, 0.3);
+      }
+      .model__body {
+        color: var(--tx);
+        font-size: 12px;
+        line-height: 1.55;
+      }
+      .model__rule {
+        font-size: 11px;
+        color: var(--dm);
+        padding: 6px 8px;
+        background: var(--sf2);
+        border: 1px solid var(--bd);
+        border-radius: 5px;
+        font-family: var(--mono);
+      }
+      .model__rule strong {
+        color: #9cdcfe;
+        font-weight: 500;
+      }
+
+      .iso {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      @media (max-width: 720px) {
+        .iso {
+          grid-template-columns: 1fr;
+        }
+      }
+      .iso__group {
+        background: var(--sf);
+        border: 1px solid var(--bd);
+        border-radius: 10px;
+        padding: 14px 14px 12px;
+      }
+      .iso__group--arch {
+        border-top: 2px solid var(--c-c);
+      }
+      .iso__group--design {
+        border-top: 2px solid var(--c-i);
+      }
+      .iso__group h3 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--sans);
+        font-size: 13px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: 0.04em;
+        margin-bottom: 4px;
+      }
+      .iso__chip {
+        font-family: var(--sans);
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding: 2px 7px;
+        border-radius: 4px;
+        white-space: nowrap;
+      }
+      .iso__group--arch .iso__chip {
+        background: var(--c-c-dim);
+        color: var(--c-c);
+        border: 1px solid rgba(58, 141, 214, 0.35);
+      }
+      .iso__group--design .iso__chip {
+        background: var(--c-i-dim);
+        color: var(--c-i);
+        border: 1px solid rgba(124, 92, 191, 0.35);
+      }
+      .iso__sub {
+        font-size: 11px;
+        color: var(--dm);
+        margin-bottom: 12px;
+      }
+      .iso__group + .iso__group {
+        margin-top: 14px;
+      }
+      .iso__items {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .iso__item {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: 12px;
+        padding: 6px 0;
+        border-top: 1px solid var(--bd);
+        font-size: 12px;
+      }
+      .iso__item:first-child {
+        border-top: 0;
+        padding-top: 0;
+      }
+      @media (max-width: 520px) {
+        .iso__item {
+          grid-template-columns: 1fr;
+          gap: 2px;
+        }
+      }
+      .iso__name {
+        font-family: var(--sans);
+        font-weight: 700;
+        color: #fff;
+      }
+      .iso__desc {
+        color: var(--dm);
+        line-height: 1.5;
+      }
+
+      .trust-pair {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      @media (max-width: 720px) {
+        .trust-pair {
+          grid-template-columns: 1fr;
+        }
+      }
+      .trust {
+        background: var(--sf);
+        border: 1px solid var(--bd);
+        border-radius: 10px;
+        padding: 14px 16px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .trust--classic {
+        border-top: 2px solid var(--d-a);
+      }
+      .trust--zero {
+        border-top: 2px solid #1d9e8a;
+      }
+      .trust__head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .trust__icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      .trust--classic .trust__icon {
+        background: var(--d-a-dim);
+        border: 1px solid var(--d-a);
+      }
+      .trust--zero .trust__icon {
+        background: rgba(29, 158, 138, 0.12);
+        border: 1px solid #1d9e8a;
+      }
+      .trust__title {
+        font-family: var(--sans);
+        font-size: 14px;
+        font-weight: 700;
+        color: #fff;
+      }
+      .trust__motto {
+        font-size: 10.5px;
+        color: var(--dm);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-top: 2px;
+      }
+      .trust__body {
+        color: var(--tx);
+        font-size: 12.5px;
+        line-height: 1.6;
+      }
+      .trust__list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .trust__list li {
+        font-size: 11.5px;
+        color: var(--dm);
+        padding-left: 14px;
+        position: relative;
+      }
+      .trust__list li::before {
+        content: "›";
+        position: absolute;
+        left: 0;
+      }
+      .trust--classic .trust__list li::before {
+        color: var(--d-a);
+      }
+      .trust--zero .trust__list li::before {
+        color: #1d9e8a;
+      }
+      .trust__list strong {
+        color: var(--tx);
+        font-weight: 600;
+      }
+
+      .compare {
+        display: grid;
+        grid-template-columns: 160px 1fr 1fr;
+        gap: 0;
+        background: var(--sf);
+        border: 1px solid var(--bd);
+        border-radius: 8px;
+        overflow: hidden;
+        font-size: 11.5px;
+      }
+      @media (max-width: 640px) {
+        .compare {
+          grid-template-columns: 110px 1fr 1fr;
+          font-size: 10.5px;
+        }
+      }
+      .compare > div {
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--bd);
+      }
+      .compare > div:nth-last-child(-n + 3) {
+        border-bottom: 0;
+      }
+      .compare__head {
+        background: var(--sf2);
+        font-family: var(--sans);
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--dm);
+      }
+      .compare__head.classic {
+        color: var(--d-a);
+      }
+      .compare__head.zero {
+        color: #1d9e8a;
+      }
+      .compare__label {
+        color: var(--dm);
+        background: var(--sf2);
+        font-size: 10.5px;
+      }
+      .compare__cell {
+        color: var(--tx);
+      }
+
+      .ft {
+        margin-top: 28px;
+        padding-top: 14px;
+        border-top: 1px solid var(--bd);
+        font-size: 10px;
+        color: var(--dm2);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hdr">
+        <div class="icon">🛡</div>
+        <div>
+          <h1>Security Principles</h1>
+          <div class="sub">
+            Foundational concepts that guide every security decision
+          </div>
+        </div>
+      </header>
+
+      <section class="section">
+        <h2>The CIA Triad</h2>
+        <p class="lead">
+          The CIA triad is the foundational model for information security.
+          Every control, policy, and design decision maps back to one (or
+          more) of its three pillars: <strong>Confidentiality</strong>,
+          <strong>Integrity</strong>, and <strong>Availability</strong>.
+          A strong security posture keeps all three in balance.
+        </p>
+
+        <div class="triad">
+          <article class="pillar pillar--c">
+            <div class="pillar__head">
+              <div class="pillar__badge">C</div>
+              <div>
+                <div class="pillar__title">Confidentiality</div>
+                <div class="pillar__tagline">Only the right eyes</div>
+              </div>
+            </div>
+            <div class="pillar__body">
+              Ensures information is accessible only to those explicitly
+              authorised to see it. Data stays private whether it's at rest,
+              in transit, or in use.
+            </div>
+            <ul class="pillar__list">
+              <li><strong>Encryption</strong> — TLS, AES, full-disk crypto</li>
+              <li><strong>Access control</strong> — RBAC, least privilege</li>
+              <li><strong>Authentication</strong> — MFA, strong passwords</li>
+              <li><strong>Data classification</strong> — handle by sensitivity</li>
+              <li>
+                <em>Broken by:</em> data breaches, eavesdropping, shoulder
+                surfing
+              </li>
+            </ul>
+          </article>
+
+          <article class="pillar pillar--i">
+            <div class="pillar__head">
+              <div class="pillar__badge">I</div>
+              <div>
+                <div class="pillar__title">Integrity</div>
+                <div class="pillar__tagline">Unaltered &amp; trustworthy</div>
+              </div>
+            </div>
+            <div class="pillar__body">
+              Guarantees data and systems remain accurate and unmodified
+              except by authorised parties. If a byte changes, you'll know —
+              and you'll know who.
+            </div>
+            <ul class="pillar__list">
+              <li><strong>Hashing</strong> — SHA-256, HMAC verification</li>
+              <li><strong>Digital signatures</strong> — non-repudiation</li>
+              <li><strong>Checksums</strong> — detect corruption in transit</li>
+              <li><strong>Version control &amp; audit logs</strong></li>
+              <li>
+                <em>Broken by:</em> tampering, MITM injection, insider
+                modification
+              </li>
+            </ul>
+          </article>
+
+          <article class="pillar pillar--a">
+            <div class="pillar__head">
+              <div class="pillar__badge">A</div>
+              <div>
+                <div class="pillar__title">Availability</div>
+                <div class="pillar__tagline">There when you need it</div>
+              </div>
+            </div>
+            <div class="pillar__body">
+              Ensures authorised users can reach systems and data whenever
+              they need them. Security that blocks legitimate access is
+              security that has failed.
+            </div>
+            <ul class="pillar__list">
+              <li><strong>Redundancy</strong> — HA clusters, multi-region</li>
+              <li><strong>Backups &amp; DR plans</strong></li>
+              <li><strong>DDoS protection</strong> — rate limits, WAF, CDN</li>
+              <li><strong>Patching &amp; capacity planning</strong></li>
+              <li>
+                <em>Broken by:</em> ransomware, DoS attacks, hardware failure
+              </li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="break">
+          <strong>Trade-offs</strong>
+          The three pillars often pull against each other. Encrypting every
+          backup (confidentiality) can slow recovery (availability). Strict
+          change control (integrity) can delay incident response. Good
+          security isn't maximising one pillar — it's choosing the right
+          balance for the threat model and business need.
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>The DAD Triad</h2>
+        <p class="lead">
+          If CIA describes what defenders protect, the DAD triad describes what
+          attackers — or disasters — inflict. Every offensive outcome maps to
+          one of <strong>Disclosure</strong>, <strong>Alteration</strong>, or
+          <strong>Destruction / Denial</strong>. It's the mirror image of the
+          CIA triad, and a useful lens for threat modelling.
+        </p>
+
+        <div class="triad">
+          <article class="pillar pillar--dd">
+            <div class="pillar__head">
+              <div class="pillar__badge">D</div>
+              <div>
+                <div class="pillar__title">Disclosure</div>
+                <div class="pillar__tagline">Breaks Confidentiality</div>
+              </div>
+            </div>
+            <div class="pillar__body">
+              Sensitive information reaches unauthorised parties. The data
+              itself may be unchanged — the damage is that it was seen at
+              all.
+            </div>
+            <ul class="pillar__list">
+              <li><strong>Data breach</strong> — DB dump, S3 bucket leak</li>
+              <li><strong>Eavesdropping</strong> — unencrypted Wi-Fi, MITM</li>
+              <li><strong>Credential theft</strong> — phishing, keyloggers</li>
+              <li><strong>Insider leak</strong> — screenshots, emails</li>
+              <li>
+                <em>Driver:</em> espionage, extortion, competitive advantage
+              </li>
+            </ul>
+          </article>
+
+          <article class="pillar pillar--da">
+            <div class="pillar__head">
+              <div class="pillar__badge">A</div>
+              <div>
+                <div class="pillar__title">Alteration</div>
+                <div class="pillar__tagline">Breaks Integrity</div>
+              </div>
+            </div>
+            <div class="pillar__body">
+              Data or systems are modified without authorisation. The values
+              you trust are no longer the values that were written — and you
+              may not notice.
+            </div>
+            <ul class="pillar__list">
+              <li><strong>Tampering</strong> — forged transactions, records</li>
+              <li><strong>Defacement</strong> — modified web content</li>
+              <li><strong>Code / supply-chain injection</strong></li>
+              <li><strong>Log manipulation</strong> — covering tracks</li>
+              <li>
+                <em>Driver:</em> fraud, sabotage, anti-forensics
+              </li>
+            </ul>
+          </article>
+
+          <article class="pillar pillar--dx">
+            <div class="pillar__head">
+              <div class="pillar__badge">D</div>
+              <div>
+                <div class="pillar__title">Destruction / Denial</div>
+                <div class="pillar__tagline">Breaks Availability</div>
+              </div>
+            </div>
+            <div class="pillar__body">
+              Data is wiped or systems are rendered unreachable. The asset
+              still belongs to you — you just can't use it.
+            </div>
+            <ul class="pillar__list">
+              <li><strong>Ransomware</strong> — encrypts to deny access</li>
+              <li><strong>Wiper malware</strong> — irreversible destruction</li>
+              <li><strong>DDoS</strong> — overwhelms the service</li>
+              <li><strong>Hardware failure / outage</strong></li>
+              <li>
+                <em>Driver:</em> disruption, extortion, hacktivism
+              </li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="mapping">
+          <div class="mapping__row">
+            <span class="cia"><b>Confidentiality</b></span>
+            <span class="arrow">⇄</span>
+            <span class="dad"><b>Disclosure</b></span>
+          </div>
+          <div class="mapping__row">
+            <span class="cia"><b>Integrity</b></span>
+            <span class="arrow">⇄</span>
+            <span class="dad"><b>Alteration</b></span>
+          </div>
+          <div class="mapping__row">
+            <span class="cia"><b>Availability</b></span>
+            <span class="arrow">⇄</span>
+            <span class="dad"><b>Destruction</b></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Security Models</h2>
+        <p class="lead">
+          Formal models that describe how systems should enforce
+          confidentiality, integrity, or access control. Each one picks a
+          specific property to protect and defines the rules that keep it
+          intact — useful vocabulary for designing or evaluating any security
+          architecture.
+        </p>
+
+        <div class="models">
+          <article class="model model--conf">
+            <div class="model__head">
+              <div class="model__name">Bell–LaPadula</div>
+              <div class="model__tag">Confidentiality</div>
+            </div>
+            <div class="model__body">
+              The classic military-grade multi-level security model. Subjects
+              and objects get classification labels; information is never
+              allowed to flow from a higher level to a lower one.
+            </div>
+            <div class="model__rule">
+              <strong>No read up</strong> (simple security) ·
+              <strong>no write down</strong> (★-property)
+            </div>
+          </article>
+
+          <article class="model model--int">
+            <div class="model__head">
+              <div class="model__name">Biba</div>
+              <div class="model__tag">Integrity</div>
+            </div>
+            <div class="model__body">
+              The integrity counterpart of Bell–LaPadula. Prevents lower-
+              integrity data from corrupting higher-integrity data — an analyst
+              can't let untrusted input overwrite a trusted report.
+            </div>
+            <div class="model__rule">
+              <strong>No read down</strong> (simple integrity) ·
+              <strong>no write up</strong> (★-integrity)
+            </div>
+          </article>
+
+          <article class="model model--int">
+            <div class="model__head">
+              <div class="model__name">Clark–Wilson</div>
+              <div class="model__tag">Integrity</div>
+            </div>
+            <div class="model__body">
+              Commercial-world integrity model built around
+              <em>well-formed transactions</em>: users can only modify data
+              through certified programs, and separation of duties prevents a
+              single actor from committing fraud.
+            </div>
+            <div class="model__rule">
+              Subject → <strong>TP</strong> → CDI · enforces certification
+              &amp; separation of duties
+            </div>
+          </article>
+
+          <article class="model model--access">
+            <div class="model__head">
+              <div class="model__name">Brewer &amp; Nash</div>
+              <div class="model__tag">Conflict of Interest</div>
+            </div>
+            <div class="model__body">
+              Also called the <em>Chinese Wall</em> model. Access rights change
+              dynamically based on what a subject has already accessed — once
+              you view client A's data, data from competing client B becomes
+              off-limits.
+            </div>
+            <div class="model__rule">
+              History-based access · prevents insider conflicts of interest
+            </div>
+          </article>
+
+          <article class="model model--conf">
+            <div class="model__head">
+              <div class="model__name">Goguen–Meseguer</div>
+              <div class="model__tag">Non-interference</div>
+            </div>
+            <div class="model__body">
+              Earliest formal non-interference model. Actions of high-level
+              users must not influence what low-level users can see — pre-
+              defined permission lists decide exactly which subjects may
+              interact with which objects.
+            </div>
+            <div class="model__rule">
+              High actions <strong>invisible</strong> to low subjects
+            </div>
+          </article>
+
+          <article class="model model--int">
+            <div class="model__head">
+              <div class="model__name">Sutherland</div>
+              <div class="model__tag">Information Flow</div>
+            </div>
+            <div class="model__body">
+              State-machine model focused on preventing unauthorised
+              <em>inference</em> — stopping an attacker from deducing secret
+              state by observing permitted outputs.
+            </div>
+            <div class="model__rule">
+              Blocks covert channels &amp; inference attacks
+            </div>
+          </article>
+
+          <article class="model model--access">
+            <div class="model__head">
+              <div class="model__name">Graham–Denning</div>
+              <div class="model__tag">Access Control</div>
+            </div>
+            <div class="model__body">
+              Defines the eight primitive commands needed to securely create
+              and delete subjects &amp; objects, and to assign or transfer
+              rights between them — foundation for most OS-level access
+              control systems.
+            </div>
+            <div class="model__rule">
+              8 primitives: create/delete subject, create/delete object,
+              read/grant/delete/transfer right
+            </div>
+          </article>
+
+          <article class="model model--access">
+            <div class="model__head">
+              <div class="model__name">Harrison–Ruzzo–Ullman (HRU)</div>
+              <div class="model__tag">Access Control</div>
+            </div>
+            <div class="model__body">
+              Extends Graham–Denning with an access-control matrix and formal
+              commands. Famously proved the <em>safety problem</em> —
+              determining whether a right can ever leak — is undecidable in
+              the general case.
+            </div>
+            <div class="model__rule">
+              Access matrix · <strong>safety is undecidable</strong>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>ISO/IEC 19249</h2>
+        <p class="lead">
+          ISO/IEC 19249 catalogues principles for building secure systems. It
+          splits them into <strong>architectural</strong> principles (how the
+          system is structured) and <strong>design</strong> principles (how
+          components behave) — five of each.
+        </p>
+
+        <article class="iso__group iso__group--arch">
+          <h3>
+            Architectural Principles
+            <span class="iso__chip">5 · Structure</span>
+          </h3>
+          <p class="iso__sub">How the system is put together.</p>
+          <div class="iso__items">
+            <div class="iso__item">
+              <div class="iso__name">Domain Separation</div>
+              <div class="iso__desc">
+                Group related components into isolated domains, each with its
+                own security attributes. Example: x86 privilege rings — kernel
+                in ring 0, user apps in ring 3. Ties into the Goguen–Meseguer
+                model.
+              </div>
+            </div>
+            <div class="iso__item">
+              <div class="iso__name">Layering</div>
+              <div class="iso__desc">
+                Structure the system into abstract layers so policies can be
+                enforced and validated at each level. Example: the seven-layer
+                OSI model. This is the basis of Defence in Depth.
+              </div>
+            </div>
+            <div class="iso__item">
+              <div class="iso__name">Encapsulation</div>
+              <div class="iso__desc">
+                Hide internals and expose only controlled methods or APIs.
+                Example (OOP): call <code>clock.increment()</code> instead of
+                writing directly to the <code>seconds</code> field — prevents
+                invalid state.
+              </div>
+            </div>
+            <div class="iso__item">
+              <div class="iso__name">Redundancy</div>
+              <div class="iso__desc">
+                Duplicate components so failure of one doesn't take the system
+                down, and tampering can be detected. Examples: dual power
+                supplies, RAID 5 parity. Protects both availability and
+                integrity.
+              </div>
+            </div>
+            <div class="iso__item">
+              <div class="iso__name">Virtualization</div>
+              <div class="iso__desc">
+                Share hardware across isolated guests. Provides sandboxing,
+                safe malware detonation, and stronger security boundaries —
+                the foundation of modern cloud and analysis labs.
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="iso__group iso__group--design">
+          <h3>
+            Design Principles
+            <span class="iso__chip">5 · Behaviour</span>
+          </h3>
+          <p class="iso__sub">How components behave at runtime.</p>
+          <div class="iso__items">
+            <div class="iso__item">
+              <div class="iso__name">Least Privilege</div>
+              <div class="iso__desc">
+                Give each subject the minimum permissions needed — nothing
+                more. If a user only needs to view a document, grant read
+                without write. Also called "need-to-know".
+              </div>
+            </div>
+            <div class="iso__item">
+              <div class="iso__name">Attack Surface Minimisation</div>
+              <div class="iso__desc">
+                Shrink what an attacker can reach. Disable unused services,
+                close unneeded ports, remove dead code — fewer features mean
+                fewer latent vulnerabilities.
+              </div>
+            </div>
+            <div class="iso__item">
+              <div class="iso__name">Centralized Parameter Validation</div>
+              <div class="iso__desc">
+                Validate every input through one shared library so malformed
+                data can't reach vulnerable code paths. Prevents injection,
+                DoS, and RCE classes at a single chokepoint.
+              </div>
+            </div>
+            <div class="iso__item">
+              <div class="iso__name">Centralized General Security Services</div>
+              <div class="iso__desc">
+                Consolidate shared security functions — authentication,
+                logging, crypto — into dedicated services. Back them with
+                redundancy so centralisation doesn't become a single point of
+                failure.
+              </div>
+            </div>
+            <div class="iso__item">
+              <div class="iso__name">Error &amp; Exception Handling</div>
+              <div class="iso__desc">
+                Design to <strong>fail safe</strong>: a crashed firewall
+                should block, not allow. Never leak sensitive data (stack
+                traces, memory, other users' info) through error messages.
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="section">
+        <h2>Trust Models</h2>
+        <p class="lead">
+          How much should a system trust a user, device, or request that
+          arrives from inside the perimeter? Two dominant philosophies answer
+          this very differently — one assumes insiders are mostly OK, the
+          other assumes nobody is.
+        </p>
+
+        <div class="trust-pair">
+          <article class="trust trust--classic">
+            <div class="trust__head">
+              <div class="trust__icon">🤝</div>
+              <div>
+                <div class="trust__title">Trust, but Verify</div>
+                <div class="trust__motto">Perimeter-based · Legacy default</div>
+              </div>
+            </div>
+            <div class="trust__body">
+              The classic model: once a user or device passes the front door
+              (firewall, VPN, corporate network), they're largely trusted.
+              Verification happens at the boundary, and periodic checks
+              validate ongoing behaviour — but internal traffic flows
+              freely.
+            </div>
+            <ul class="trust__list">
+              <li><strong>Strong perimeter</strong> — firewall, DMZ, VPN</li>
+              <li><strong>Implicit internal trust</strong> — LAN is "safe"</li>
+              <li>
+                <strong>Periodic audits</strong> — catch misuse after the
+                fact
+              </li>
+              <li>
+                <em>Weakness:</em> once an attacker is inside, lateral
+                movement is cheap
+              </li>
+            </ul>
+          </article>
+
+          <article class="trust trust--zero">
+            <div class="trust__head">
+              <div class="trust__icon">🛑</div>
+              <div>
+                <div class="trust__title">Zero Trust</div>
+                <div class="trust__motto">Never trust · Always verify</div>
+              </div>
+            </div>
+            <div class="trust__body">
+              Assumes the network is already hostile — inside and out. Every
+              request is authenticated, authorised, and continuously
+              evaluated against identity, device posture, and context,
+              regardless of where it originates. Defined in
+              <code>NIST SP 800-207</code>.
+            </div>
+            <ul class="trust__list">
+              <li>
+                <strong>Identity-centric</strong> — strong auth + MFA on
+                every request
+              </li>
+              <li>
+                <strong>Micro-segmentation</strong> — least-privilege
+                per resource
+              </li>
+              <li>
+                <strong>Continuous evaluation</strong> — device health,
+                risk scoring
+              </li>
+              <li>
+                <em>Trade-off:</em> higher operational and engineering
+                complexity
+              </li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="compare">
+          <div class="compare__head">Dimension</div>
+          <div class="compare__head classic">Trust, but Verify</div>
+          <div class="compare__head zero">Zero Trust</div>
+
+          <div class="compare__label">Network assumption</div>
+          <div class="compare__cell">Internal network is trusted</div>
+          <div class="compare__cell">Every network is hostile</div>
+
+          <div class="compare__label">Verification</div>
+          <div class="compare__cell">At the perimeter, then periodic</div>
+          <div class="compare__cell">Continuous, per request</div>
+
+          <div class="compare__label">Default access</div>
+          <div class="compare__cell">Broad, once authenticated</div>
+          <div class="compare__cell">Least privilege, scoped</div>
+
+          <div class="compare__label">Primary control</div>
+          <div class="compare__cell">Firewalls &amp; VPN</div>
+          <div class="compare__cell">Identity &amp; policy engine</div>
+
+          <div class="compare__label">Breach blast radius</div>
+          <div class="compare__cell">Wide — lateral movement easy</div>
+          <div class="compare__cell">Contained by segmentation</div>
+        </div>
+      </section>
+
+      <footer class="ft">
+        Core security principles · Sometimes extended to the Parkerian Hexad
+        (adds authenticity, possession, utility)
+      </footer>
+    </div>
+  </body>
+</html>

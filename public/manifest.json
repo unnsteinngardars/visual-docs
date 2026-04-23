@@ -1,0 +1,51 @@
+{
+  "tree": [
+    {
+      "title": "Intro",
+      "children": [
+        { "title": "Welcome", "file": "pages/welcome.html" }
+      ]
+    },
+    {
+      "title": "Demos",
+      "children": [
+        { "title": "Example Visualization", "file": "pages/example.html" }
+      ]
+    },
+    {
+      "title": "Cheat Sheets",
+      "children": [
+        {
+          "title": "Windows AD Incident Response",
+          "file": "pages/incident-response-cheatsheet.html"
+        },
+        {
+          "title": "Digital Forensics",
+          "file": "pages/digital-forensics-cheatsheet.html"
+        }
+      ]
+    },
+    {
+      "title": "TryHackMe",
+      "children": [
+        {
+          "title": "Security Principles",
+          "file": "pages/security-principles.html"
+        },
+        {
+          "title": "FlareVM: Arsenal of tools",
+          "children": [
+            {
+              "title": "Arsenal of tools",
+              "file": "pages/flare-vm-arsenal.html"
+            },
+            {
+              "title": "Commonly used tools for investigations",
+              "file": "pages/commonly-used-tools.html"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

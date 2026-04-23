@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Commonly Used Tools for Investigations</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0c0d0f;
+        --sf: #131519;
+        --sf2: #1a1d23;
+        --bd: rgba(255, 255, 255, 0.07);
+        --bdhi: rgba(255, 255, 255, 0.13);
+        --tx: #e8e6e0;
+        --dm: #8a8880;
+        --dm2: #555450;
+        --accent: #3a8dd6;
+        --accent-dim: rgba(58, 141, 214, 0.12);
+        --mono: "JetBrains Mono", monospace;
+        --sans: "Syne", sans-serif;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background: var(--bg);
+        color: var(--tx);
+        font-family: var(--mono);
+        font-size: 13px;
+        line-height: 1.55;
+        padding: 28px 22px 48px;
+      }
+      .page {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .hdr {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding-bottom: 18px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid var(--bd);
+      }
+      .hdr .icon {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+        background: var(--accent-dim);
+        border: 1px solid var(--accent);
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-size: 22px;
+      }
+      .hdr h1 {
+        font-family: var(--sans);
+        font-size: clamp(18px, 3vw, 26px);
+        font-weight: 800;
+        color: #fff;
+        line-height: 1.15;
+      }
+      .hdr .sub {
+        margin-top: 3px;
+        font-size: 11px;
+        color: var(--dm);
+      }
+
+      .lead {
+        color: var(--dm);
+        font-size: 12.5px;
+        max-width: 820px;
+        margin-bottom: 22px;
+      }
+
+      .tools-detailed {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .tcard {
+        background: var(--sf);
+        border: 1px solid var(--bd);
+        border-left: 2px solid var(--accent);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: border-color 0.12s ease;
+      }
+      .tcard:hover {
+        border-color: var(--bdhi);
+        border-left-color: var(--accent);
+      }
+
+      .tcard__head {
+        display: grid;
+        grid-template-columns: minmax(160px, 220px) 1fr;
+        gap: 16px;
+        align-items: baseline;
+        padding: 12px 14px;
+      }
+      @media (max-width: 640px) {
+        .tcard__head {
+          grid-template-columns: 1fr;
+          gap: 4px;
+        }
+      }
+
+      .tcard__name {
+        font-family: var(--sans);
+        font-size: 14px;
+        font-weight: 700;
+        color: #fff;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .tcard__name::after {
+        content: "↗";
+        color: var(--dm2);
+        font-size: 11px;
+        transition: color 0.12s ease;
+      }
+      .tcard__name:hover {
+        color: var(--accent);
+      }
+      .tcard__name:hover::after {
+        color: var(--accent);
+      }
+
+      .tcard__value {
+        color: var(--dm);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .tcard details {
+        border-top: 1px solid var(--bd);
+      }
+      .tcard details[open] {
+        background: var(--sf2);
+      }
+      .tcard summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 8px 14px;
+        font-family: var(--sans);
+        font-size: 10.5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--dm);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .tcard summary::-webkit-details-marker {
+        display: none;
+      }
+      .tcard summary::before {
+        content: "▶";
+        font-size: 9px;
+        color: var(--dm2);
+        transition: transform 0.12s ease;
+        display: inline-block;
+      }
+      .tcard details[open] summary::before {
+        transform: rotate(90deg);
+      }
+      .tcard summary:hover {
+        color: var(--tx);
+      }
+
+      .tcard__body {
+        padding: 4px 14px 14px 28px;
+        color: var(--tx);
+        font-size: 12px;
+        line-height: 1.6;
+      }
+      .tcard__body p {
+        margin-bottom: 6px;
+      }
+      .tcard__body ul {
+        margin: 4px 0 6px 18px;
+      }
+      .tcard__body li {
+        margin-bottom: 3px;
+      }
+      .tcard__body strong {
+        color: #fff;
+        font-weight: 600;
+      }
+      .tcard__body code {
+        background: var(--bg);
+        border: 1px solid var(--bd);
+        border-radius: 4px;
+        padding: 1px 5px;
+        font-size: 11px;
+        color: #9cdcfe;
+      }
+
+      .ft {
+        margin-top: 28px;
+        padding-top: 14px;
+        border-top: 1px solid var(--bd);
+        font-size: 10px;
+        color: var(--dm2);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hdr">
+        <div class="icon">🔎</div>
+        <div>
+          <h1>Commonly Used Tools for Investigations</h1>
+          <div class="sub">
+            Starter toolkit for triage, static &amp; dynamic analysis, and
+            network review
+          </div>
+        </div>
+      </header>
+
+      <p class="lead">
+        These tools are the basic ones used for initial investigations. Click a
+        tool name to visit its site, or expand a card for deeper usage notes.
+      </p>
+
+      <div class="tools-detailed">
+        <article class="tcard">
+          <div class="tcard__head">
+            <a
+              class="tcard__name"
+              href="https://learn.microsoft.com/en-us/sysinternals/downloads/procmon"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Procmon</a
+            >
+            <div class="tcard__value">
+              A helpful tool for tracking system activity, especially regarding
+              malware research, troubleshooting, and forensic investigations.
+            </div>
+          </div>
+          <details>
+            <summary>More details</summary>
+            <div class="tcard__body">
+              <p>
+                Process Monitor captures real-time file system, registry,
+                process, thread, and network activity in one unified timeline.
+                It's the go-to choice for watching what a suspect binary
+                actually touches when it runs.
+              </p>
+              <ul>
+                <li>
+                  <strong>Filtering:</strong> narrow by process name, operation
+                  (<code>CreateFile</code>, <code>RegSetValue</code>), path, or
+                  result — keeps noise manageable.
+                </li>
+                <li>
+                  <strong>Boot logging:</strong> capture activity before
+                  logon-time persistence kicks in.
+                </li>
+                <li>
+                  <strong>Save as PML:</strong> share captures with another
+                  analyst or parse them with tooling.
+                </li>
+              </ul>
+              <p>
+                Part of the Sysinternals Suite — runs portable, no install.
+              </p>
+            </div>
+          </details>
+        </article>
+
+        <article class="tcard">
+          <div class="tcard__head">
+            <a
+              class="tcard__name"
+              href="https://learn.microsoft.com/en-us/sysinternals/downloads/process-explorer"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Process Explorer</a
+            >
+            <div class="tcard__value">
+              Shows the parent-child relationship of processes, DLLs loaded, and
+              their paths.
+            </div>
+          </div>
+          <details>
+            <summary>More details</summary>
+            <div class="tcard__body">
+              <p>
+                Think of it as Task Manager on steroids. The tree view makes it
+                trivial to spot a suspicious process launched by
+                <code>winword.exe</code> or <code>explorer.exe</code>.
+              </p>
+              <ul>
+                <li>
+                  <strong>Handles / DLL view:</strong> toggle the lower pane to
+                  see every handle or loaded module per process.
+                </li>
+                <li>
+                  <strong>VirusTotal integration:</strong> right-click → submit
+                  hashes to get reputation in-line.
+                </li>
+                <li>
+                  <strong>Verified signers:</strong> column highlights
+                  unsigned/unknown binaries at a glance.
+                </li>
+              </ul>
+              <p>
+                Combine with Procmon: identify the suspect PID here, then
+                filter Procmon to it.
+              </p>
+            </div>
+          </details>
+        </article>
+
+        <article class="tcard">
+          <div class="tcard__head">
+            <a
+              class="tcard__name"
+              href="https://mh-nexus.de/en/hxd/"
+              target="_blank"
+              rel="noopener noreferrer"
+              >HxD</a
+            >
+            <div class="tcard__value">
+              Malicious files can be examined or altered via hex editing.
+            </div>
+          </div>
+          <details>
+            <summary>More details</summary>
+            <div class="tcard__body">
+              <p>
+                Fast Windows hex editor supporting large files, disk sectors,
+                and live memory of running processes.
+              </p>
+              <ul>
+                <li>
+                  <strong>Magic bytes &amp; headers:</strong> verify the true
+                  file type (e.g. <code>4D 5A</code> for PE,
+                  <code>50 4B 03 04</code> for ZIP/OOXML).
+                </li>
+                <li>
+                  <strong>Patching:</strong> flip bytes to neutralize a
+                  known-bad JMP or clear an AV-triggering string when
+                  defanging a sample.
+                </li>
+                <li>
+                  <strong>Data inspector:</strong> instantly interpret bytes as
+                  int/float/GUID/timestamp.
+                </li>
+              </ul>
+            </div>
+          </details>
+        </article>
+
+        <article class="tcard">
+          <div class="tcard__head">
+            <a
+              class="tcard__name"
+              href="https://www.wireshark.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Wireshark</a
+            >
+            <div class="tcard__value">
+              Observing and investigating network traffic to look for unusual
+              activity.
+            </div>
+          </div>
+          <details>
+            <summary>More details</summary>
+            <div class="tcard__body">
+              <p>
+                The reference-grade packet capture and protocol dissector.
+                Essential for spotting C2 beacons, data exfil, DNS tunneling,
+                and unauthorised lateral movement.
+              </p>
+              <ul>
+                <li>
+                  <strong>Display filters:</strong>
+                  <code>http.request</code>, <code>dns</code>,
+                  <code>tcp.stream eq 4</code>,
+                  <code>ip.addr == 10.0.0.5</code>.
+                </li>
+                <li>
+                  <strong>Follow TCP/TLS stream:</strong> reconstruct the full
+                  conversation instead of reading packet-by-packet.
+                </li>
+                <li>
+                  <strong>Export objects:</strong> pull payloads / binaries out
+                  of HTTP, SMB, and FTP captures.
+                </li>
+              </ul>
+              <p>
+                Pair with <code>tcpdump</code> on the wire, then analyse the
+                <code>.pcap</code> here offline.
+              </p>
+            </div>
+          </details>
+        </article>
+
+        <article class="tcard">
+          <div class="tcard__head">
+            <a
+              class="tcard__name"
+              href="https://ntcore.com/?page_id=388"
+              target="_blank"
+              rel="noopener noreferrer"
+              >CFF Explorer</a
+            >
+            <div class="tcard__value">
+              Can generate file hashes for integrity verification, authenticate
+              the source of system files, and validate their validity.
+            </div>
+          </div>
+          <details>
+            <summary>More details</summary>
+            <div class="tcard__body">
+              <p>
+                A PE (Portable Executable) editor by NTCore. Gives a structured
+                view of every header, section, import, and resource inside a
+                Windows binary — and lets you modify them.
+              </p>
+              <ul>
+                <li>
+                  <strong>Hash calculator:</strong> MD5/SHA-1/SHA-256 for IOC
+                  sharing and VT lookups.
+                </li>
+                <li>
+                  <strong>Imports / exports:</strong> spot suspicious API usage
+                  like <code>VirtualAllocEx</code>,
+                  <code>CreateRemoteThread</code>.
+                </li>
+                <li>
+                  <strong>Signature check:</strong> verify digital signatures
+                  and the signing chain.
+                </li>
+                <li>
+                  <strong>Rebuild PE:</strong> fix headers after unpacking a
+                  dumped process.
+                </li>
+              </ul>
+            </div>
+          </details>
+        </article>
+
+        <article class="tcard">
+          <div class="tcard__head">
+            <a
+              class="tcard__name"
+              href="https://www.winitor.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              >PEStudio</a
+            >
+            <div class="tcard__value">
+              Static analysis or studying executable file properties without
+              running the files.
+            </div>
+          </div>
+          <details>
+            <summary>More details</summary>
+            <div class="tcard__body">
+              <p>
+                Loads a Windows binary without executing it and surfaces
+                indicators an analyst cares about, colour-coded by risk.
+              </p>
+              <ul>
+                <li>
+                  <strong>Blacklisted strings &amp; APIs:</strong> anti-debug,
+                  injection, keylogging, crypto routines flagged
+                  automatically.
+                </li>
+                <li>
+                  <strong>VirusTotal lookup:</strong> built-in hash submission
+                  shows engine hits without uploading the file itself.
+                </li>
+                <li>
+                  <strong>Indicators tab:</strong> centralised summary of
+                  everything suspicious, ranked.
+                </li>
+              </ul>
+              <p>
+                Great first-pass triage tool before opening the sample in a
+                disassembler.
+              </p>
+            </div>
+          </details>
+        </article>
+
+        <article class="tcard">
+          <div class="tcard__head">
+            <a
+              class="tcard__name"
+              href="https://github.com/mandiant/flare-floss"
+              target="_blank"
+              rel="noopener noreferrer"
+              >FLOSS</a
+            >
+            <div class="tcard__value">
+              Extracts and de-obfuscates all strings from malware programs
+              using advanced static analysis techniques.
+            </div>
+          </div>
+          <details>
+            <summary>More details</summary>
+            <div class="tcard__body">
+              <p>
+                FLARE Obfuscated String Solver (by Mandiant) does what
+                <code>strings.exe</code> can't: it automatically recovers
+                strings that malware builds at runtime on the stack or decodes
+                with simple ciphers.
+              </p>
+              <ul>
+                <li>
+                  <strong>Static strings:</strong> traditional ASCII + UTF-16
+                  extraction.
+                </li>
+                <li>
+                  <strong>Stack strings:</strong> recovered from instructions
+                  that construct strings character-by-character.
+                </li>
+                <li>
+                  <strong>Decoded strings:</strong> emulator-assisted recovery
+                  of XOR/ROT/RC4-obfuscated content.
+                </li>
+              </ul>
+              <p>
+                Run early — recovered URLs, mutexes, and registry keys often
+                reveal the malware family instantly.
+              </p>
+            </div>
+          </details>
+        </article>
+      </div>
+
+      <footer class="ft">
+        Starter investigation kit · Verify each binary's authenticity before
+        running · Detonate samples only inside an isolated VM
+      </footer>
+    </div>
+  </body>
+</html>

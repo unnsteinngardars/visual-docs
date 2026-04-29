@@ -53,6 +53,14 @@
       ]
     },
     {
+      "title": "Shells",
+      "component": "Shells"
+    },
+    {
+      "title": "SOC",
+      "component": "SOC"
+    },
+    {
       "title": "Deprecated",
       "hideInProd": true,
       "children": [

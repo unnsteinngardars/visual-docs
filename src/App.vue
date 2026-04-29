@@ -33,6 +33,8 @@ const componentRegistry = {
   Sqlmap: defineAsyncComponent(() => import("./pages/Sqlmap.vue")),
   Cryptography: defineAsyncComponent(() => import("./pages/Cryptography.vue")),
   Hashing: defineAsyncComponent(() => import("./pages/Hashing.vue")),
+  Shells: defineAsyncComponent(() => import("./pages/Shells.vue")),
+  SOC: defineAsyncComponent(() => import("./pages/SOC.vue")),
 };
 
 const route = useRoute();

@@ -16,6 +16,18 @@
       ]
     },
     {
+      "title": "Documents",
+      "component": "Documents"
+    },
+    {
+      "title": "Articles",
+      "component": "Articles"
+    },
+    {
+      "title": "Websites",
+      "component": "Websites"
+    },
+    {
       "title": "OWASP Top 10",
       "component": "OwaspTop10"
     },

@@ -42,7 +42,8 @@
         },
         { "title": "Network Protocols", "component": "NetworkProtocols" },
         { "title": "Routing", "component": "Routing" },
-        { "title": "NAT", "component": "Nat" }
+        { "title": "NAT", "component": "Nat" },
+        { "title": "Firewalls", "component": "Firewalls" }
       ]
     },
     {
@@ -59,6 +60,14 @@
     {
       "title": "SOC",
       "component": "SOC"
+    },
+    {
+      "title": "Technologies",
+      "component": "Technologies"
+    },
+    {
+      "title": "Digital Forensics",
+      "component": "DigitalForensics"
     },
     {
       "title": "Deprecated",
